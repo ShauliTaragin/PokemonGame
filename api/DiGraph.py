@@ -5,6 +5,8 @@ from GraphInterface import GraphInterface
 from Node import Node
 import json
 
+from api.Edge import Edge
+
 
 class DiGraph(GraphInterface):
 
@@ -101,7 +103,8 @@ class DiGraph(GraphInterface):
             return False
         else:
             # add the edge to the nodes
-            node_src.outEdges[id2] = weight
+            # node_src.outEdges[id2] = weight
+            node_src.add_out_edge(Edge(id1, id2, weight))
             node_dst.inEdges[id1] = weight
             self._mc += 1
             self._numOfEdges += 1
