@@ -1,3 +1,4 @@
+from api.Edge import Edge
 
 
 class Pokemon:
@@ -5,5 +6,5 @@ class Pokemon:
         self.value = value
         self.type = type
         self.pos = pos
-
+        self.curr_edge: Edge
 
