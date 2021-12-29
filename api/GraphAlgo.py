@@ -15,13 +15,14 @@ from DiGraph import DiGraph
 from GraphAlgoInterface import GraphAlgoInterface
 from Node import Node
 from GraphInterface import GraphInterface
+from api.Edge import Edge
 
 
 class GraphAlgo(GraphAlgoInterface):
     def __init__(self, graph: DiGraph = None):
         self.graph = graph
-        self.g=None
-        self.initiated=False
+        self.g = None
+        self.initiated = False
 
     def get_graph(self) -> GraphInterface:
         return self.graph
@@ -85,11 +86,11 @@ class GraphAlgo(GraphAlgoInterface):
 
     def shortest_path(self, id1: int, id2: int) -> (float, list):
         list_of_path = []
-        if(not self.initiated):
+        if (not self.initiated):
             g_algo = GraphAlgo(self.graph)
             # init the dijkstra class
-            self.g=MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
-            self.initiated=True
+            self.g = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
+            self.initiated = True
         try:
             # send the node to the dijkstra function
             self.g.dijkstra_Getmin_distances(id1)
@@ -199,119 +200,23 @@ class GraphAlgo(GraphAlgoInterface):
         except:
             return None, inf
 
+    def get_edge_on_point(self, geo_location: tuple, type_of_edge: int) -> Edge:
+        all_nodes = self.get_graph().get_all_v()
+        for node in all_nodes.keys():
+            edges = self.get_graph().all_out_edges_of_node(node)
+            for edge in edges.values():
+                if (all_nodes[edge.src].geolocation.x < geo_location[0] < all_nodes[edge.dst].geolocation.x or
+                        all_nodes[edge.src].geolocation.x > geo_location[0] > all_nodes[edge.dst].geolocation.x):
+                    if (all_nodes[edge.src].geolocation.y < geo_location[1] < all_nodes[edge.dst].geolocation.y or
+                            all_nodes[edge.src].geolocation.y > geo_location[1] > all_nodes[edge.dst].geolocation.y):
+                        if type_of_edge < 0 and edge.edge_type < 0:
+                            return edge
+                        elif type_of_edge > 0 and edge.edge_type > 0:
+                            return edge
+
     def plot_graph(self) -> None:
         # call to the 
         self.graph_plot()
-
-    def is_connected(self) -> bool:
-        # if bfs on the regular graph returns false
-        if not self.bfs(self.graph):
-            return False
-        try:
-            reversed_graph: DiGraph = self.reverse(self.graph)
-            # if bfs on the reversed graph is false
-            if not self.bfs(reversed_graph):
-                return False
-            # if both returned true
-            return True
-        except:
-            return False
-    
-    """
-    This function will use the bfs in order to check if the graph is connected
-    """
-    def bfs(self, graph: DiGraph) -> bool:
-        flag = True
-        for node in graph.nodes:  # first lets set tag of all nodes to 0 e.g not visited
-            graph.nodes.get(node).tag = 0
-        # init the bfs queue for the nodes
-        queue = Queue(maxsize=len(graph.nodes))
-        # get first node and run bfs from it
-        for key in graph.nodes.keys():
-            if not flag:
-                break
-            flag = False
-            src: Node = graph.nodes.get(key)
-            queue.put(key)
-            src.tag = 1
-        while not queue.empty():
-            current_nodes_key = queue.get()
-            neighbors = graph.all_out_edges_of_node(current_nodes_key)
-            # iterate over the neighbors of the node
-            for neighbor_key in neighbors.keys():
-                current_neighbor_node: Node = graph.nodes.get(neighbor_key)
-                # now the node is visited
-                if current_neighbor_node.tag == 0:
-                    current_neighbor_node.tag = 1
-                    queue.put(neighbor_key)
-        # if we find for some node that its tag is 0 e.g hasn't been visited then return false.
-        for node in graph.nodes:
-            if graph.nodes.get(node).tag == 0:
-                return False
-        return True
-    """
-    The function reversing the edges direction and returns the reversed graph
-    """
-    def reverse(self, graph: DiGraph) -> DiGraph:
-        reversed_graph: DiGraph = DiGraph()
-        # traverse through each node
-        for connected_key in graph.nodes.keys():
-            # only if graph doesn't already have the node then add it
-            if connected_key not in reversed_graph.nodes:
-                src_bfr_reverse: Node = graph.nodes.get(connected_key)
-                reversed_graph.nodes[connected_key] = src_bfr_reverse
-            neighbors = graph.all_out_edges_of_node(connected_key)
-            # traverse through edges coming out of each node
-            for neighbor_of_connected_key in neighbors.keys():
-                # only if graph doesn't already have the node then add it
-                if neighbor_of_connected_key not in reversed_graph.nodes.keys():  
-                    dst_bfr_reverse: Node = graph.nodes.get(neighbor_of_connected_key)
-                    reversed_graph.nodes[neighbor_of_connected_key] = dst_bfr_reverse
-                weight_of_reversed_edge = graph.nodes.get(neighbor_of_connected_key).inEdges.get(connected_key)
-                # add the edge to the new graph
-                reversed_graph.add_edge(neighbor_of_connected_key, connected_key, weight_of_reversed_edge)
-        return reversed_graph
-
-    """
-    @:param nodes -> a list of the tsp nodes we wish to find the shortest path to that visits all of them
-    @:param graph ->the graph we are working on 
-    @:return bool -> True if there is a path in the graph between all nodes and False otherwise 
-    """
-
-    def find_path(self, nodes: List[Node], graph: DiGraph) -> bool:
-        copy_graph = GraphAlgo(copy.deepcopy(graph))  # creating a copy of our graph so we dont change the orignal one
-        flag1 = True
-        try:
-            keys = []
-            for node_iter in graph.nodes:
-                keys.append(node_iter)
-            src_node = False
-            src_node_key = 0
-            for node_iter2 in copy_graph.graph.nodes:
-                if not flag1:
-                    break
-                # greedily search find the node we start from
-                if copy_graph.graph.nodes[node_iter2] in nodes:
-                    src_node_key = node_iter2
-                    src_node = True
-                flag1 = False
-            if src_node:
-                # running the is connected method in order to a check if the graph is connected and b to change the
-                # tags on the node according to the dfs traversal through the graph
-                copy_graph.is_connected()
-                flag1 = True
-                for i in keys:
-                    if (i != src_node_key) and (graph.nodes.get(i).tag != 1) and (i in keys):
-                        return False
-            copy_graph.is_connected()
-            for i in range(len(keys)):
-                key_current = keys[i]
-                if (key_current != src_node_key) and (key_current in nodes) and (graph.nodes.get(key_current).tag != 1):
-                    return False
-
-            return True
-        except:
-            return False
 
     def graph_plot(self, ):
         pygame.init()
