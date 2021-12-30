@@ -1,14 +1,15 @@
+from api.GeoLocation import GeoLocation
 from api.Node import Node
 
 
 class Agent:
-    def __init__(self , id:int):
+    def __init__(self , id:int, location: GeoLocation):
         self.id = id
         self.value = 0
         self.src = 0
         self.dest = 0
         self. speed = 0.0
-        self.pos = 0 #this is position in geo location
+        self.pos = location #this is position in geo location
         self.curr_node: Node
 
     """
