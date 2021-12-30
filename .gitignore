@@ -2,3 +2,4 @@
 .idea/
 client_python/__pycache__/
 .DS_Store
+../api/__pycache__/
