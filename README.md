@@ -163,8 +163,8 @@ We will lay out our graph Theory algorithms and explain how we implemented them:
 <!-- CONTACT -->
 ## Contact
 
-Ido - [here](https://github.com/idobar1403/)
+[Ido](https://github.com/idobar1403/)
 
-Shauli - [here](https://github.com/ShauliTaragin/)
+[Shauli](https://github.com/ShauliTaragin/)
 
-Project Link: [here](https://github.com/ShauliTaragin/OOP_Ex3)
+[The Project](https://github.com/ShauliTaragin/PokemonGame)
