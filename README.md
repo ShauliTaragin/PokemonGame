@@ -126,23 +126,6 @@ We will lay out our graph Theory algorithms and explain how we implemented them:
 <!-- results -->
 ## Results
 
-#### For our enhanced comparison between java and python results please visit our wiki page for this project.
-
-These are our best Results. The computer which ran this program is a MacBook with 16GB ram , Macintosh startup disk , 8-core CPU (4 performance and 4 efficiency)
-:
-
-|Algorithms|Small graph up to 1000 nodes|10000 nodes|100000 nodes|1000000 nodes|
-|---------|---------|---------|---------|---------|
-|**Get Graph**|10 ms|160 ms|1 second|Not enough ram to create |
-|**load_from_json**|20 ms|160 ms|1.2 seconds|Not enough ram to create |
-|**save_to_json**|70 ms|400 ms|10 seconds|Not enough ram to create
-|**shortestPath**|50 ms|440 ms|10 seconds|Not enough ram to create
-|**center**|7 seconds|16 minutes|Time Out|Not enough ram to create
-|**tsp**|for 30 nodes in node list in 1000 graph - 1.50 minutes|for 30 nodes in node list in 10000 graph - 120 minutes|Time out|Not enough ram to create
-
-
-As you can see our results after analyzing the code,our code is efficient. Besides running in good times our tsp algorithm returns a very accurate result.
-
 ---------
 
 ## UML
