@@ -22,7 +22,9 @@ class Play_game:
         client.start_connection(HOST, PORT)
         arena = Arena(client.get_info())
         arena.update_pokemons_lst(client.get_pokemons())
-        print(arena.pokemons_lst)
+        client.add_agent("{\"id\":0}")
+        arena.update_agent_lst(client.get_agents())
+        a=5
 if __name__ == '__main__':
     print("at main")
     pf = Play_game()

@@ -3,12 +3,12 @@ from api.Node import Node
 
 
 class Agent:
-    def __init__(self , id:int, location: GeoLocation):
+    def __init__(self , id:int, location: GeoLocation , value , src , dest ,speed):
         self.id = id
-        self.value = 0
-        self.src = 0
-        self.dest = 0
-        self. speed = 0.0
+        self.value = value
+        self.src = src
+        self.dest = dest
+        self. speed = speed
         self.pos = location #this is position in geo location
         self.curr_node: Node
 

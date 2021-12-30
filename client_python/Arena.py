@@ -55,4 +55,15 @@ class Arena:
     """
 
     def update_agent_lst(self, json_file):
-        pass
+        try:
+            agents = json.loads(json_file,
+                                  object_hook=lambda d: SimpleNamespace(**d)).Agents
+            agents = [agent.Agent for agent in agents]
+            for i in agents:
+                d: str = i.pos
+                x, y, z = d.split(',')
+                location = GeoLocation(float(x), float(y), float(z))
+                double007 = Agent(i.id, location , i.value , i.src , i.dest , i.speed)
+                self.agents_lst.append(double007)
+        except Exception:
+            print("problem with json load pokemon")
