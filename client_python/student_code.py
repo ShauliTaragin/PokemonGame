@@ -30,7 +30,7 @@ pokemons = client.get_pokemons()
 pokemons_obj = json.loads(pokemons, object_hook=lambda d: SimpleNamespace(**d))
 
 print(pokemons)
-
+print(client.get_info())
 graph_json = client.get_graph()
 
 FONT = pygame.font.SysFont('Arial', 20, bold=True)
@@ -111,7 +111,7 @@ while client.is_running() == 'true':
         x = my_scale(n.pos.x, x=True)
         y = my_scale(n.pos.y, y=True)
 
-        # its just to get a nice antialiased circle
+        # its just to get a nice Intialiased circle
         gfxdraw.filled_circle(screen, int(x), int(y),
                               radius, Color(64, 80, 174))
         gfxdraw.aacircle(screen, int(x), int(y),

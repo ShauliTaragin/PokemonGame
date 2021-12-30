@@ -10,11 +10,11 @@ from queue import Queue
 from typing import List
 
 # import HelperAlgo
-import MinHeapDijkstra
-from DiGraph import DiGraph
-from GraphAlgoInterface import GraphAlgoInterface
-from Node import Node
-from GraphInterface import GraphInterface
+from api import MinHeapDijkstra
+from api.GraphAlgoInterface import GraphAlgoInterface
+from api.Node import Node
+from api.GraphInterface import GraphInterface
+from api.DiGraph import DiGraph
 from api.Edge import Edge
 
 

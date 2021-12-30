@@ -1,7 +1,7 @@
 import sys
 
-from DiGraph import DiGraph
-from Node import Node
+from api.DiGraph import DiGraph
+from api.Node import Node
 
 """
 classic minHeap class to use in the dijkstra algorithm

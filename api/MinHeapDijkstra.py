@@ -1,16 +1,15 @@
 import copy
 import sys
 
-from DiGraph import DiGraph
-from GraphAlgo import GraphAlgo
-from Node import Node
-from minHeap import MinHeap
+from api.DiGraph import DiGraph
+from api.Node import Node
+from api.minHeap import MinHeap
 
 
 class DijkstraUsingMinHeap:
     class Graph:
-        def __init__(self, Graph_algo: GraphAlgo):
-            self.graph: DiGraph = GraphAlgo(Graph_algo.graph).graph
+        def __init__(self, Graph_algo: DiGraph):
+            self.graph: DiGraph = DiGraph(Graph_algo)
             self.max = 0
             self.parents = []
             self.heap_nodes = []

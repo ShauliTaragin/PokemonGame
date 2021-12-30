@@ -1,8 +1,8 @@
 import random
 import sys
 
-from GraphInterface import GraphInterface
-from Node import Node
+from api.GraphInterface import GraphInterface
+from api.Node import Node
 import json
 
 from api.Edge import Edge
