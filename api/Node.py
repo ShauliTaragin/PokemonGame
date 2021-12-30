@@ -3,11 +3,10 @@ from api.GeoLocation import GeoLocation
 
 
 class Node:
-
-    def __init__(self, key: int, geolocation: tuple = (0, 0, 0)):
+    def __init__(self, key: int, geolocation: GeoLocation):
         self.key = key
         self.weight = 0
-        self.geolocation = GeoLocation(geolocation)
+        self.geolocation = geolocation
         self.tag = 0
         self.outEdges = {}
         self.inEdges = {}
@@ -27,3 +26,4 @@ class Node:
     # add in edge
     def add_in_edge(self, weight: float, src: int):
         self.inEdges[src] = weight
+
