@@ -1,6 +1,7 @@
 import json
 from types import SimpleNamespace
 
+from api.GeoLocation import GeoLocation
 from api.GraphAlgo import GraphAlgo
 from client_python.Agent import Agent
 from client_python.Pokemon import Pokemon
@@ -35,7 +36,18 @@ class Arena:
     """
 
     def update_pokemons_lst(self, json_file):
-        pass
+        try:
+            pokemons = json.loads(json_file,
+                                  object_hook=lambda d: SimpleNamespace(**d)).Pokemons
+            pokemons = [p.Pokemon for p in pokemons]
+            for i in pokemons:
+                d:str = i.pos
+                x,y,z = d.split(',')
+                location = GeoLocation(float(x) , float(y) , float(z))
+                poki = Pokemon(i.value , i.type , location)
+                self.pokemons_lst.append(poki)
+        except Exception:
+            print("problem with json load pokemon")
 
     """
     @:param json_file
