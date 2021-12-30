@@ -205,17 +205,14 @@ class GraphAlgo(GraphAlgoInterface):
         for node in all_nodes.keys():
             edges = self.get_graph().all_out_edges_of_node(node)
             for edge in edges.values():
-                if (all_nodes[edge.src].geolocation.x < geo_location[0] < all_nodes[edge.dst].geolocation.x or
-                        all_nodes[edge.src].geolocation.x > geo_location[0] > all_nodes[edge.dst].geolocation.x):
-                    if (all_nodes[edge.src].geolocation.y < geo_location[1] < all_nodes[edge.dst].geolocation.y or
-                            all_nodes[edge.src].geolocation.y > geo_location[1] > all_nodes[edge.dst].geolocation.y):
-                        if type_of_edge < 0 and edge.edge_type < 0:
-                            return edge
-                        elif type_of_edge > 0 and edge.edge_type > 0:
-                            return edge
+                if edge.get_point_on_edge(geo_location[0]) == geo_location[1]:
+                    if type_of_edge < 0 and edge.edge_type < 0:
+                        return edge
+                    elif type_of_edge > 0 and edge.edge_type > 0:
+                        return edge
 
     def plot_graph(self) -> None:
-        # call to the 
+        # call to the
         self.graph_plot()
 
     def graph_plot(self, ):
