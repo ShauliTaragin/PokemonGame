@@ -57,7 +57,6 @@ def scale(data, min_screen, max_screen, min_data, max_data):
     """
     return ((data - min_data) / (max_data-min_data)) * (max_screen - min_screen) + min_screen
 
-
 # decorate scale with the correct values
 
 def my_scale(data, x=False, y=False):

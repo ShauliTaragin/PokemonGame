@@ -3,6 +3,7 @@ import sys
 
 from api.GraphInterface import GraphInterface
 from api.Node import Node
+from api.GeoLocation import GeoLocation
 import json
 
 from api.Edge import Edge
@@ -14,6 +15,7 @@ class DiGraph(GraphInterface):
         self.nodes = {}
         self._numOfEdges = 0
         self._mc = 0
+        jsonfile = "../"+jsonfile
         if jsonfile is not None:
             with open(jsonfile, 'r') as jsonFile:
                 json_object = json.load(jsonFile)
@@ -36,7 +38,7 @@ class DiGraph(GraphInterface):
                 src = edgeIter['src']
                 weight = edgeIter['w']
                 dest = edgeIter['dest']
-                self.add_edge(src, dest, weight)
+                self.add_edge(src, dest, weight, self.nodes[src].geolocation, self.nodes[dest].geolocation)
             self.set_location()
         # if the file is None then give randomize locations
         else:
@@ -95,7 +97,7 @@ class DiGraph(GraphInterface):
     @return: The current version of this graph.
     """
 
-    def add_edge(self, id1: int, id2: int, weight: float) -> bool:
+    def add_edge(self, id1: int, id2: int, weight: float , id1_loc, id2_loc) -> bool:
         node_src = self.nodes.get(id1)
         node_dst = self.nodes.get(id2)
         # if there is no node with one of the given id's or the edge is missing then return false
@@ -104,7 +106,7 @@ class DiGraph(GraphInterface):
         else:
             # add the edge to the nodes
             # node_src.outEdges[id2] = weight
-            node_src.add_out_edge(Edge(id1, id2, weight))
+            node_src.add_out_edge(Edge(id1, id2, weight, GeoLocation(id1_loc), GeoLocation(id2_loc)))
             node_dst.inEdges[id1] = weight
             self._mc += 1
             self._numOfEdges += 1

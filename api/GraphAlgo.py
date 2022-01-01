@@ -205,7 +205,8 @@ class GraphAlgo(GraphAlgoInterface):
         for node in all_nodes.keys():
             edges = self.get_graph().all_out_edges_of_node(node)
             for edge in edges.values():
-                if edge.get_point_on_edge(geo_location[0]) == geo_location[1]:
+                loc = edge.get_point_on_edge(geo_location[0])
+                if  loc == geo_location[1]:
                     if type_of_edge < 0 and edge.edge_type < 0:
                         return edge
                     elif type_of_edge > 0 and edge.edge_type > 0:
