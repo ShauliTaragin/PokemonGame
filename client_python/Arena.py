@@ -16,6 +16,7 @@ class Arena:
 
     def __init__(self, game_info: str, client: Client):
         self.pokemons_lst: [Pokemon] = []
+        self.actual_pokemons_in_graph : [Pokemon] = []
         self.agents_lst: [Agent] = []
         self.graph_algo: GraphAlgo = GraphAlgo()
         self.info_dict = {}

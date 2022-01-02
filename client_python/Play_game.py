@@ -1,10 +1,15 @@
+import sys
+
 from client import Client
 import json
 from pygame import gfxdraw
 import pygame
+import itertools
 from pygame import *
 
+from client_python.Agent import Agent
 from client_python.Arena import Arena
+from client_python.Pokemon import Pokemon
 from client_python.Window import Window
 
 
@@ -15,8 +20,53 @@ class Play_game:
         self.id: int
         self.scanerio_num: int
 
-    def AllocateAgent(self)->int: #return agents id
-        pass
+    def calculate_time_of_path(self, arena: Arena, list_of_stops: list) -> (float, list):
+        the_path: list
+        the_weight_of_path: float
+        the_weight_of_path, the_path = arena.graph_algo.shortest_path(list_of_stops[0], list_of_stops[1].curr_edge.src)
+        the_weight_of_path += list_of_stops[1].curr_edge.weight
+        the_path.append(list_of_stops[1].curr_edge.dst)
+        for i in range[1:len(list_of_stops) - 1]:
+            temp_path, current_weight = arena.graph_algo.shortest_path(list_of_stops[i].curr_edge.dst
+                                                                       , list_of_stops[i + 1].curr_edge.src)
+            temp_path.append(list_of_stops[i + 1].curr_edge.dst)
+            current_weight += list_of_stops[i + 1].curr_edge.weight
+            the_path.extend(temp_path)
+            the_weight_of_path += current_weight
+        the_path.append(list_of_stops[-1].curr_edge.dst)
+        the_weight_of_path += list_of_stops[-1].curr_edge.weight
+        return the_weight_of_path, the_path
+
+    def get_all_permutations(self, pokemon_list) -> list:
+        return list(itertools.permutations(pokemon_list))
+
+    def AllocateAgent(self, agents_list, pokemon: Pokemon, arena: Arena) -> Agent:  # return agents id
+        min_weight = sys.maxsize  # hold the min weight if an agent would pick up the pokemon
+        min_agent: Agent  # hold the agent for which we find will pick up the pokemon quickest
+        min_path = []
+        temp_path = []
+        temp_dist: float
+        for agent in agents_list:
+            agent.permutaion.append(pokemon)
+            agent.permutaion.extend(agent.pokemons_to_eat)
+            permutations_of_all_pokemons = self.get_all_permutations(agent.permutaion)
+            for i in permutations_of_all_pokemons:
+                if agent.dest == -1:  # if the agent is on a node we add the node to the path
+                    i = list(i)
+                else:
+                    i.insert(0, agent.dest)
+                temp_tuple = self.calculate_time_of_path(arena, i)
+                temp_dist, temp_path = temp_tuple[0], temp_tuple[1]
+                if temp_dist/agent.speed < min_weight:
+                    min_path = temp_path
+                    min_weight = temp_dist/agent.speed
+                    min_agent = agent
+        min_agent.agents_path = min_path
+        min_agent.pokemons_to_eat.append(Pokemon)
+        for agent in agents_list:
+            if agent is not min_agent:
+                agent.permutaion.clear()
+        return min_agent
 
     def run_game(self):
         print("here")
@@ -40,27 +90,29 @@ class Play_game:
             arena.update_pokemons_lst(client.get_pokemons())
             arena.update_agent_lst(client.get_agents())
             # here need to put update game info
-            Window(arena.graph_algo, arena.agents_lst, arena.pokemons_lst , pygame , screen, clock )
+            Window(arena.graph_algo, arena.agents_lst, arena.pokemons_lst, pygame, screen, clock)
             for events in pygame.event.get():
                 if events.type == pygame.QUIT:
                     pygame.quit()
                     exit(0)
-            #find which agent goes to which pokemon
+            # find which agent goes to which pokemon
             for pokemon in arena.pokemons_lst:
-                agents_id_allocated = self.AllocateAgent(agents_list ,pokemon,arena )
-
-
+                # need to allocate only for a pokemon which is new
+                if pokemon not in arena.actual_pokemons_in_graph:
+                    agents_id_allocated = self.AllocateAgent(arena.agents_lst, pokemon, arena)
+                    arena.actual_pokemons_in_graph.append(pokemon)
             for agent in arena.agents_lst:
                 if agent.dest == -1:
-                    #change this to our algorithm of move and choose next edge
-                    next_node = (agent.src - 1) % len(arena.graph_algo.graph.nodes)
+                    # change this to our algorithm of move and choose next edge
+                    next_node = arena.graph_algo.graph.nodes.get(agent.agents_path[0])
                     client.choose_next_edge(
                         '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
                     ttl = client.time_to_end()
                     print(ttl, client.get_info())
-
+            # need to add methods for when we call the move
             client.move()
         pygame.quit()
+
 
 if __name__ == '__main__':
     print("at main")

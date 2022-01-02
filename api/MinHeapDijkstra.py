@@ -51,7 +51,7 @@ class DijkstraUsingMinHeap:
                     weight_of_node = dict_temp.get(dest_ination)
                     # only if dest_ination vertex is not present in SPT
                     if self.extracted[dest_ination] == False:
-                        newDest = self.heap_nodes[extractedNodeKey] + weight_of_node
+                        newDest = self.heap_nodes[extractedNodeKey] + weight_of_node.weight
                         current_dest = self.heap_nodes[dest_ination]
                         # if the current_dest is bigger then the newDest, update the min dist and update the parent
                         if current_dest > newDest:
