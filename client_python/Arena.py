@@ -1,6 +1,8 @@
 import json
 from types import SimpleNamespace
 
+from api import MinHeapDijkstra
+from api.DiGraph import DiGraph
 from api.GeoLocation import GeoLocation
 from api.GraphAlgo import GraphAlgo
 from api.Edge import Edge
@@ -17,6 +19,7 @@ class Arena:
         self.agents_lst: [Agent] = []
         self.graph_algo: GraphAlgo = GraphAlgo()
         self.info_dict = {}
+        self.dijkstra_list = {}
         self.client = Client
         if game_info is not None:
             namespace = json.loads(game_info,
@@ -51,6 +54,12 @@ class Arena:
                 edge = self.graph_algo.get_edge_on_point((float(x), float(y), float(z)), i.type)
                 location = GeoLocation((float(x), float(y), float(z)))
                 poki = Pokemon(i.value, i.type, location, edge)
+                if poki.curr_edge.src not in self.dijkstra_list:
+                    g_algo = GraphAlgo(self.graph_algo.graph)
+                    # init the dijkstra class
+                    dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
+                    dijkstra.dijkstra_Getmin_distances(poki.curr_edge.src)
+                    self.dijkstra_list[poki.curr_edge.src] = list(dijkstra.heap_nodes)
                 self.pokemons_lst.append(poki)
 
         except Exception:
@@ -72,6 +81,12 @@ class Arena:
                 x, y, z = d.split(',')
                 location = GeoLocation((float(x), float(y), float(z)))
                 double007 = Agent(i.id, location, i.value, i.src, i.dest, i.speed)
+                if double007.src not in self.dijkstra_list:
+                    g_algo = GraphAlgo(self.graph_algo.graph)
+                    # init the dijkstra class
+                    dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
+                    dijkstra.dijkstra_Getmin_distances(double007.src)
+                    self.dijkstra_list[double007.src] = list(dijkstra.heap_nodes)
                 self.agents_lst.append(double007)
         except Exception:
             print("problem with json load pokemon")

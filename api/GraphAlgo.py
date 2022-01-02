@@ -118,8 +118,6 @@ class GraphAlgo(GraphAlgoInterface):
             actual_nodes_lst.append(self.graph.nodes.get(i))
         # first we search by a helper function if we even have a path between our node_lst if not we
         # obviously return none
-        if not self.find_path(actual_nodes_lst, self.graph):
-            return None
         try:
             best_path = []
             min_path = sys.maxsize
@@ -206,7 +204,7 @@ class GraphAlgo(GraphAlgoInterface):
             edges = self.get_graph().all_out_edges_of_node(node)
             for edge in edges.values():
                 loc = edge.get_point_on_edge(geo_location[0])
-                if  loc == geo_location[1]:
+                if loc == geo_location[1]:
                     if type_of_edge < 0 and edge.edge_type < 0:
                         return edge
                     elif type_of_edge > 0 and edge.edge_type > 0:
