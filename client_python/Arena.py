@@ -15,7 +15,7 @@ class Arena:
     def __init__(self, game_info: str, client: Client):
         self.pokemons_lst: [Pokemon] = []
         self.agents_lst: [Agent] = []
-        self.algorithm: GraphAlgo = GraphAlgo()
+        self.graph_algo: GraphAlgo = GraphAlgo()
         self.info_dict = {}
         self.client = Client
         if game_info is not None:
@@ -30,7 +30,7 @@ class Arena:
             self.info_dict["id"] = namespace.id
             self.info_dict["graph"] = namespace.graph
             self.info_dict["agents"] = namespace.agents
-            self.algorithm.load_from_json(self.info_dict["graph"])
+            self.graph_algo.load_from_json(self.info_dict["graph"])
         else:
             self.info_dict = {}
 
@@ -39,6 +39,7 @@ class Arena:
     """
 
     def update_pokemons_lst(self, json_file):
+        self.pokemons_lst.clear()
         try:
             self.pokemons_lst.clear()
             pokemons = json.loads(json_file,
@@ -47,7 +48,7 @@ class Arena:
             for i in pokemons:
                 d: str = i.pos
                 x, y, z = d.split(',')
-                edge = self.algorithm.get_edge_on_point((float(x), float(y), float(z)), i.type)
+                edge = self.graph_algo.get_edge_on_point((float(x), float(y), float(z)), i.type)
                 location = GeoLocation((float(x), float(y), float(z)))
                 poki = Pokemon(i.value, i.type, location, edge)
                 self.pokemons_lst.append(poki)
@@ -61,6 +62,7 @@ class Arena:
     """
 
     def update_agent_lst(self, json_file):
+        self.agents_lst.clear()
         try:
             agents = json.loads(json_file,
                                 object_hook=lambda d: SimpleNamespace(**d)).Agents
