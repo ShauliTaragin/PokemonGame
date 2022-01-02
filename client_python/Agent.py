@@ -11,6 +11,7 @@ class Agent:
         self. speed = speed
         self.pos = location #this is position in geo location
         self.curr_node: Node
+        self.agents_path = []
 
     """
     if we want to change agent according to json file we read we can do that here.
@@ -19,4 +20,7 @@ class Agent:
         pass
 
     def onNOde(self)->bool:
+        pass
+
+    def update_agents_path(self):
         pass
