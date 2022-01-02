@@ -15,6 +15,9 @@ class Play_game:
         self.id: int
         self.scanerio_num: int
 
+    def AllocateAgent(self)->int: #return agents id
+        pass
+
     def run_game(self):
         print("here")
         HOST = '127.0.0.1'
@@ -38,10 +41,15 @@ class Play_game:
             arena.update_agent_lst(client.get_agents())
             # here need to put update game info
             Window(arena.graph_algo, arena.agents_lst, arena.pokemons_lst , pygame , screen, clock )
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
+            for events in pygame.event.get():
+                if events.type == pygame.QUIT:
                     pygame.quit()
                     exit(0)
+            #find which agent goes to which pokemon
+            for pokemon in arena.pokemons_lst:
+                agents_id_allocated = self.AllocateAgent(agents_list ,pokemon,arena )
+
+
             for agent in arena.agents_lst:
                 if agent.dest == -1:
                     #change this to our algorithm of move and choose next edge

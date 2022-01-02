@@ -12,7 +12,8 @@ class Agent:
         self.pos = location #this is position in geo location
         self.curr_node: Node
         self.agents_path = []
-
+        self.pokemons_to_eat = []
+        self.permutaion = []
     """
     if we want to change agent according to json file we read we can do that here.
     """
@@ -22,5 +23,4 @@ class Agent:
     def onNOde(self)->bool:
         pass
 
-    def update_agents_path(self):
-        pass
+
