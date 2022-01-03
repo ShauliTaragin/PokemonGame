@@ -16,7 +16,7 @@ class Arena:
 
     def __init__(self, game_info: str, client: Client):
         self.pokemons_lst: [Pokemon] = []
-        self.actual_pokemons_in_graph: [Pokemon] = []
+        # self.actual_pokemons_in_graph : [Pokemon] = []
         self.agents_lst: [Agent] = []
         self.graph_algo: GraphAlgo = GraphAlgo()
         self.info_dict = {}
@@ -42,10 +42,11 @@ class Arena:
     need to see in which way the server sends the json of the pokems/agent(if its json object ,string, etc..) 
     """
 
-    def update_pokemons_lst(self, json_file):
-        self.pokemons_lst.clear()
+    def update_pokemons_lst(self, json_file, first_iter: bool)-> list:
+        # self.pokemons_lst.clear()
         try:
-            self.pokemons_lst.clear()
+            # self.pokemons_lst.clear()
+            pokemons_to_allocate: list = []
             pokemons = json.loads(json_file,
                                   object_hook=lambda d: SimpleNamespace(**d)).Pokemons
             pokemons = [p.Pokemon for p in pokemons]
@@ -54,11 +55,12 @@ class Arena:
                 x, y, z = d.split(',')
                 edge = self.graph_algo.get_edge_on_point((float(x), float(y), float(z)), i.type)
                 location = GeoLocation((float(x), float(y), float(z)))
-                found = 0
-                for already_in in self.actual_pokemons_in_graph:
-                    if already_in.pos.x == location.x and already_in.pos.y == location.y:
-                        found = 1
-                if found == 0:
+                found_pokemon_exists = False
+                for exiting_pokemon in self.pokemons_lst:
+                    if exiting_pokemon.pos.x == location.x and exiting_pokemon.pos.y == location.y:
+                        found_pokemon_exists = True
+                        break
+                if not found_pokemon_exists:
                     poki = Pokemon(i.value, i.type, location, edge)
                     if poki.curr_edge.src not in self.dijkstra_list:
                         g_algo = GraphAlgo(self.graph_algo.graph)
@@ -66,12 +68,6 @@ class Arena:
                         dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
                         dijkstra.dijkstra_Getmin_distances(poki.curr_edge.src)
                         self.dijkstra_list[poki.curr_edge.src] = list(dijkstra.heap_nodes)
-                    if poki.curr_edge.dst not in self.dijkstra_list:
-                        g_algo = GraphAlgo(self.graph_algo.graph)
-                        # init the dijkstra class
-                        dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
-                        dijkstra.dijkstra_Getmin_distances(poki.curr_edge.dst)
-                        self.dijkstra_list[poki.curr_edge.dst] = list(dijkstra.heap_nodes)
                     # already_in_list=-1
                     # for current_pokes in self.actual_pokemons_in_graph:
                     #     if(current_pokes.pos.x == poki.pos.x and current_pokes.pos.y == poki.pos.y
@@ -79,7 +75,10 @@ class Arena:
                     #         already_in_list = 0
                     # if already_in_list == -1:
                     self.pokemons_lst.append(poki)
-
+                    if first_iter:
+                        self.pokemons_lst.clear()
+                    pokemons_to_allocate.append(poki)
+            return pokemons_to_allocate
         except Exception:
             print("problem with json load pokemon")
 
@@ -88,9 +87,7 @@ class Arena:
     need to see in which way the server sends the json of the pokems/agent(if its json object ,string, etc..) 
     """
 
-    def update_agent_lst(self, json_file):
-        print("this is the json file for agents   " + json_file )
-        # self.agents_lst.clear()
+    def update_agent_lst(self, json_file , already_exists:bool):
         try:
             agents = json.loads(json_file,
                                 object_hook=lambda d: SimpleNamespace(**d)).Agents
@@ -99,59 +96,30 @@ class Arena:
                 d: str = i.pos
                 x, y, z = d.split(',')
                 location = GeoLocation((float(x), float(y), float(z)))
-                double007 = Agent(i.id, location, i.value, i.src, i.dest, i.speed)
-                if double007.src not in self.dijkstra_list:
-                    g_algo = GraphAlgo(self.graph_algo.graph)
-                    # init the dijkstra class
-                    dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
-                    dijkstra.dijkstra_Getmin_distances(double007.src)
-                    self.dijkstra_list[double007.src] = list(dijkstra.heap_nodes)
-                if double007.dest not in self.dijkstra_list and double007.dest != -1:
-                    g_algo = GraphAlgo(self.graph_algo.graph)
-                    # init the dijkstra class
-                    dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
-                    dijkstra.dijkstra_Getmin_distances(double007.dest)
-                    self.dijkstra_list[double007.dest] = list(dijkstra.heap_nodes)
-
-                # self.agents_lst.append(double007)
-                for agent_in_list in self.agents_lst:
-                    if agent_in_list.id == double007.id:
-                        temp_agent = agent_in_list
-                        double007.agents_path = temp_agent.agents_path
-                        double007.pokemons_to_eat = temp_agent.pokemons_to_eat
-                        self.agents_lst.remove(temp_agent)
-                        self.agents_lst.append(double007)
-                        break
+                if already_exists is True:
+                    double007 = Agent(i.id, location, i.value, i.src, i.dest, i.speed)
+                    if double007.src not in self.dijkstra_list:
+                        g_algo = GraphAlgo(self.graph_algo.graph)
+                        # init the dijkstra class
+                        dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
+                        dijkstra.dijkstra_Getmin_distances(double007.src)
+                        self.dijkstra_list[double007.src] = list(dijkstra.heap_nodes)
+                    self.agents_lst.append(double007)
+                else:
+                    for existing_agent in self.agents_lst:
+                        if existing_agent.id == i.id:
+                            existing_agent.update_from_given_values(location, i.speed, i.dest, i.src, i.value)
+                            break
         except Exception:
             print("problem with json load pokemon")
 
-    def create_agents(self, json_file):
-        try:
-            agents = json.loads(json_file,
-                                object_hook=lambda d: SimpleNamespace(**d)).Agents
-            agents = [agent.Agent for agent in agents]
-            for i in agents:
-                d: str = i.pos
-                x, y, z = d.split(',')
-                location = GeoLocation((float(x), float(y), float(z)))
-                double007 = Agent(i.id, location, i.value, i.src, i.dest, i.speed)
-                if double007.src not in self.dijkstra_list:
-                    g_algo = GraphAlgo(self.graph_algo.graph)
-                    # init the dijkstra class
-                    dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
-                    dijkstra.dijkstra_Getmin_distances(double007.src)
-                    self.dijkstra_list[double007.src] = list(dijkstra.heap_nodes)
-                self.agents_lst.append(double007)
-        except Exception:
-            print("problem with json load pokemon")
-
-    def place_agents_at_beginning(self) -> dict:
+    def place_agents_at_beginning(self, first_pkoemons: list)-> dict:
         i = 0
         list_of_agent = {}
         while i < self.info_dict["agents"] and i < self.info_dict["pokemons"]:
-            pokemon_src = self.pokemons_lst[i].curr_edge.src
-            string_of_src = "{}".format(pokemon_src)
-            json_to_agent = "{\"id\":" + string_of_src + "}"
-            list_of_agent[i] = json_to_agent
+            pokemon_src = first_pkoemons[i].curr_edge.src
+            string_of_src="{}".format(pokemon_src)
+            json_to_agent = "{\"id\":"+string_of_src+"}"
+            list_of_agent[i]=json_to_agent
             i += 1
         return list_of_agent

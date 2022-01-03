@@ -199,7 +199,7 @@ class GraphAlgo(GraphAlgoInterface):
             return None, inf
 
     def get_edge_on_point(self, geo_location: tuple, type_of_edge: int) -> Edge:
-        eps = 0.0000000000001
+        eps = 0.00000000001
         all_nodes = self.get_graph().get_all_v()
         for node in all_nodes.keys():
             edges = self.get_graph().all_out_edges_of_node(node)

@@ -2,46 +2,6 @@ from api.GraphAlgo import GraphAlgo
 from pygame import gfxdraw
 import pygame
 from pygame import *
-import math
-import sys
-from math import inf
-
-
-def draw_arrow_lines(scr: pygame.Surface, x1, y1, x2, y2, d, h):
-    dx = x2 - x1
-    dy = y2 - y1
-    D = math.sqrt(dx * dx + dy * dy)
-    xm = D - 3.5
-    xn = xm
-    ym = h
-    yn = (0 - h)
-    sin = dy / D
-    cos = dx / D
-    x = xm * cos - ym * sin + x1
-    ym = xm * sin + ym * cos + y1
-    xm = x
-    x = xn * cos - yn * sin + x1
-    yn = xn * sin + yn * cos + y1
-    xn = x
-    newX2 = (xm + xn) / 2
-    newY2 = (ym + yn) / 2
-    dx1 = newX2 - x1
-    dy1 = newY2 - y1
-    D1 = math.sqrt(dx1 * dx1 + dy1 * dy1)
-    xm1 = D1 - d
-    xn1 = xm1
-    ym1 = h
-    yn1 = 0 - h
-    sin1 = dy1 / D1
-    cos1 = dx1 / D1
-    nx = xm1 * cos1 - ym1 * sin1 + x1
-    ym1 = xm1 * sin1 + ym1 * cos1 + y1
-    xm1 = nx
-    nx = xn1 * cos1 - yn1 * sin1 + x1
-    yn1 = xn1 * sin1 + yn1 * cos1 + y1
-    xn1 = nx
-    points = [(newX2, newY2), (xm1, ym1), (xn1, yn1)]
-    pygame.draw.polygon(scr, (200, 30, 70), points)
 
 
 class Window:
@@ -53,7 +13,6 @@ class Window:
         self.screen = screen
         self.clock = self.pygame.time.Clock()
         self.draw_game()
-
     def draw_game(self):
         radius = 15
         FONT = pygame.font.SysFont('Arial', 20, bold=True)
@@ -110,7 +69,6 @@ class Window:
                 # draw the line
                 self.pygame.draw.line(self.screen, Color(61, 72, 126),
                                  (src_x, src_y), (dest_x, dest_y))
-                draw_arrow_lines(self.screen, src_x, src_y, dest_x, dest_y, 6, 5)
 
 
 
@@ -128,6 +86,8 @@ class Window:
 
         # update screen changes
         self.pygame.display.update()
-        self.clock.tick(120)
+        self.clock.tick(60)
         # refresh rate
 
+
+        # choose next edge
