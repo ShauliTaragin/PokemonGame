@@ -21,32 +21,29 @@ class Play_game:
         self.id: int
         self.scanerio_num: int
         self.EPS = 0.001
-        self.move_count = 0;
+        self.move_count = 0
 
     def distance_between_agent2Pokemon(self, agent: Agent, pokemon: Pokemon) -> float:
         return mh.sqrt(((agent.pos.x - pokemon.pos.x) ** 2) + ((agent.pos.y - pokemon.pos.y) ** 2))
 
-    def calculate_time_of_path(self, arena: Arena, list_of_stops: list) -> (float, list):
+    def calculate_time_of_path(self, arena: Arena, list_of_stops: list) -> float:
         the_path: list
         the_weight_of_path: float
-        the_weight_of_path, the_path = arena.graph_algo.shortest_path(list_of_stops[0], list_of_stops[1].curr_edge.src)
+        the_weight_of_path = arena.dijkstra_list[list_of_stops[0]][list_of_stops[1].curr_edge.src]
         the_weight_of_path += list_of_stops[1].curr_edge.weight
-        the_path.append(list_of_stops[1].curr_edge.dst)
         for i in range(1, len(list_of_stops) - 1):
-            current_weight, temp_path = arena.graph_algo.shortest_path(list_of_stops[i].curr_edge.dst
-                                                                       , list_of_stops[i + 1].curr_edge.src)
-            temp_path.append(list_of_stops[i + 1].curr_edge.dst)
+            current_weight = arena.dijkstra_list[list_of_stops[i].curr_edge.dst][list_of_stops[i + 1].curr_edge.src]
             current_weight += list_of_stops[i + 1].curr_edge.weight
-            the_path.extend(temp_path)
             the_weight_of_path += current_weight
-        return the_weight_of_path, the_path
+        return the_weight_of_path
 
     def get_all_permutations(self, pokemon_list) -> list:
         return list(itertools.permutations(pokemon_list))
 
     def AllocateAgent(self, agents_list, pokemon: Pokemon, arena: Arena) -> Agent:  # return agents id
+        curr_path: list = []
         min_weight = sys.maxsize  # hold the min weight if an agent would pick up the pokemon
-        min_agent: Agent  # hold the agent for which we find will pick up the pokemon quickest
+        min_agent = 0  # hold the agent for which we find will pick up the pokemon quickest
         min_path = []
         temp_path = []
         temp_dist: float
@@ -61,15 +58,31 @@ class Play_game:
                 else:
                     i = list(i)
                     i.insert(0, agent.dest)
-                temp_tuple = self.calculate_time_of_path(arena, i)
-                temp_dist, temp_path = temp_tuple[0], temp_tuple[1]
+                temp_dist = self.calculate_time_of_path(arena, i)
                 if temp_dist / agent.speed < min_weight:
-                    min_path = temp_path
+                    min_path = i
                     min_weight = temp_dist / agent.speed
-                    min_agent = agent
-        arena.agents_lst[min_agent.id].agents_path = min_path
-        arena.agents_lst[min_agent.id].pokemons_to_eat.append(pokemon)
+                    min_agent = agent.id
         for agent in agents_list:
+            if agent.id == min_agent:
+                # curr_path.append(min_path[0])
+                # curr_path.append(min_path[1].curr_edge.src)
+                # min_path.remove(min_path[0])
+                # if(len(min_path)>2):
+                #     min_path.remove(curr_path.remove(min_path[1].curr_edge.dst))
+                for i in range(0, len(min_path) - 1):
+                    if i == 0:
+                        current_path = arena.graph_algo.shortest_path(min_path[i],
+                                                                      min_path[i + 1].curr_edge.src)[1]
+                    else:
+                        current_path = arena.graph_algo.shortest_path(min_path[i].curr_edge.dst,
+                                                                      min_path[i + 1].curr_edge.src)[1]
+                        current_path.remove(min_path[i].curr_edge.dst)
+                    curr_path.extend(current_path)
+                if len(min_path)<3:
+                    curr_path.append(min_path[len(min_path)-1].curr_edge.dst)
+                agent.agents_path = curr_path
+                agent.pokemons_to_eat.append(pokemon)
             agent.permutaion.clear()
         return min_agent
 
@@ -95,7 +108,7 @@ class Play_game:
             arena.update_pokemons_lst(client.get_pokemons())
             arena.update_agent_lst(client.get_agents())
             # here need to put update game info
-            Window(arena.graph_algo, arena.agents_lst, arena.actual_pokemons_in_graph, pygame, screen, clock)
+            # Window(arena.graph_algo, arena.agents_lst, arena.actual_pokemons_in_graph, pygame, screen, clock)
             for events in pygame.event.get():
                 if events.type == pygame.QUIT:
                     pygame.quit()
@@ -106,6 +119,7 @@ class Play_game:
                 # if not pokemon in arena.actual_pokemons_in_graph:
                 agents_id_allocated = self.AllocateAgent(arena.agents_lst, pokemon, arena)
                 arena.actual_pokemons_in_graph.append(pokemon)
+            next_node = 0
             for agent in arena.agents_lst:
                 if agent.dest == -1:
                     # change this to our algorithm of move and choose next edge
@@ -114,7 +128,8 @@ class Play_game:
                             next_node = agent.agents_path[0]
                         else:
                             agent.agents_path.remove(agent.agents_path[0])
-                            next_node = agent.agents_path[0]
+                            if len(agent.agents_path) > 0:
+                                next_node = agent.agents_path[0]
                         client.choose_next_edge(
                             '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
                         ttl = client.time_to_end()
@@ -126,9 +141,13 @@ class Play_game:
                         client.move()
                         self.move_count += 1
                         self.grade += agent.value
-
+                        agent.pokemons_to_eat.remove(poke)
+                        arena.actual_pokemons_in_graph.remove(poke)
+            clock.tick(0)
+            client.move()
             # need to add methods for when we call the move
         pygame.quit()
+        client.stop_connection()
 
 
 if __name__ == '__main__':

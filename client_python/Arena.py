@@ -16,7 +16,7 @@ class Arena:
 
     def __init__(self, game_info: str, client: Client):
         self.pokemons_lst: [Pokemon] = []
-        self.actual_pokemons_in_graph : [Pokemon] = []
+        self.actual_pokemons_in_graph: [Pokemon] = []
         self.agents_lst: [Agent] = []
         self.graph_algo: GraphAlgo = GraphAlgo()
         self.info_dict = {}
@@ -66,6 +66,12 @@ class Arena:
                         dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
                         dijkstra.dijkstra_Getmin_distances(poki.curr_edge.src)
                         self.dijkstra_list[poki.curr_edge.src] = list(dijkstra.heap_nodes)
+                    if poki.curr_edge.dst not in self.dijkstra_list:
+                        g_algo = GraphAlgo(self.graph_algo.graph)
+                        # init the dijkstra class
+                        dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
+                        dijkstra.dijkstra_Getmin_distances(poki.curr_edge.dst)
+                        self.dijkstra_list[poki.curr_edge.dst] = list(dijkstra.heap_nodes)
                     # already_in_list=-1
                     # for current_pokes in self.actual_pokemons_in_graph:
                     #     if(current_pokes.pos.x == poki.pos.x and current_pokes.pos.y == poki.pos.y
@@ -83,7 +89,7 @@ class Arena:
     """
 
     def update_agent_lst(self, json_file):
-        #self.agents_lst.clear()
+        # self.agents_lst.clear()
         try:
             agents = json.loads(json_file,
                                 object_hook=lambda d: SimpleNamespace(**d)).Agents
@@ -99,16 +105,25 @@ class Arena:
                     dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
                     dijkstra.dijkstra_Getmin_distances(double007.src)
                     self.dijkstra_list[double007.src] = list(dijkstra.heap_nodes)
+                if double007.dest not in self.dijkstra_list and double007.dest != -1:
+                    g_algo = GraphAlgo(self.graph_algo.graph)
+                    # init the dijkstra class
+                    dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
+                    dijkstra.dijkstra_Getmin_distances(double007.dest)
+                    self.dijkstra_list[double007.dest] = list(dijkstra.heap_nodes)
 
                 # self.agents_lst.append(double007)
-
-                self.agents_lst[double007.id].pos = double007.pos
-                self.agents_lst[double007.id].value = double007.value
-                self.agents_lst[double007.id].src = double007.src
-                self.agents_lst[double007.id].dest = double007.dest
-                self.agents_lst[double007.id].speed = double007.speed
+                for agent_in_list in self.agents_lst:
+                    if agent_in_list.id == double007.id:
+                        temp_agent = agent_in_list
+                        double007.agents_path = temp_agent.agents_path
+                        double007.pokemons_to_eat = temp_agent.pokemons_to_eat
+                        self.agents_lst.remove(temp_agent)
+                        self.agents_lst.append(double007)
+                        break
         except Exception:
             print("problem with json load pokemon")
+
     def create_agents(self, json_file):
         try:
             agents = json.loads(json_file,
@@ -129,13 +144,13 @@ class Arena:
         except Exception:
             print("problem with json load pokemon")
 
-    def place_agents_at_beginning(self)-> dict:
+    def place_agents_at_beginning(self) -> dict:
         i = 0
         list_of_agent = {}
         while i < self.info_dict["agents"] and i < self.info_dict["pokemons"]:
             pokemon_src = self.pokemons_lst[i].curr_edge.src
-            string_of_src="{}".format(pokemon_src)
-            json_to_agent = "{\"id\":"+string_of_src+"}"
-            list_of_agent[i]=json_to_agent
+            string_of_src = "{}".format(pokemon_src)
+            json_to_agent = "{\"id\":" + string_of_src + "}"
+            list_of_agent[i] = json_to_agent
             i += 1
         return list_of_agent
