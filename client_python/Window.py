@@ -67,7 +67,7 @@ class Window:
                 dest_y = my_scale(dest.y, y=True)
 
                 # draw the line
-                pygame.draw.line(self.screen, Color(61, 72, 126),
+                self.pygame.draw.line(self.screen, Color(61, 72, 126),
                                  (src_x, src_y), (dest_x, dest_y))
 
 
@@ -76,16 +76,16 @@ class Window:
         for agent in self.agents:
             x = my_scale(agent.pos.x, x=True)
             y = my_scale(agent.pos.y, y=True)
-            pygame.draw.circle(self.screen, Color(122, 61, 23),
+            self.pygame.draw.circle(self.screen, Color(122, 61, 23),
                                (int(x), int(y)), radius*0.6666)
         # draw pokemons (note: should differ (GUI wise) between the up and the down pokemons (currently they are marked in the same way).
         for p in self.pokemons:
             x = my_scale(p.pos.x, x=True)
             y = my_scale(p.pos.y, y=True)
-            pygame.draw.circle(self.screen, Color(0, 255, 255), (int(x), int(y)), radius*0.6666)
+            self.pygame.draw.circle(self.screen, Color(0, 255, 255), (int(x), int(y)), radius*0.6666)
 
         # update screen changes
-        display.update()
+        self.pygame.display.update()
         self.clock.tick(60)
         # refresh rate
 

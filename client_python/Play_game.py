@@ -97,9 +97,9 @@ class Play_game:
             # find which agent goes to which pokemon
             for pokemon in arena.pokemons_lst:
                 # need to allocate only for a pokemon which is new
-                if not pokemon in arena.actual_pokemons_in_graph:
-                    agents_id_allocated = self.AllocateAgent(arena.agents_lst, pokemon, arena)
-                    arena.actual_pokemons_in_graph.append(pokemon)
+                # if not pokemon in arena.actual_pokemons_in_graph:
+                agents_id_allocated = self.AllocateAgent(arena.agents_lst, pokemon, arena)
+                arena.actual_pokemons_in_graph.append(pokemon)
             for agent in arena.agents_lst:
                 if agent.dest == -1:
                     # change this to our algorithm of move and choose next edge
@@ -112,7 +112,7 @@ class Play_game:
                         '{"agent_id":'+str(agent.id)+', "next_node_id":'+str(next_node)+'}')
                     ttl = client.time_to_end()
                     print(ttl, client.get_info())
-                    client.move()
+                client.move()
             # need to add methods for when we call the move
         pygame.quit()
 
