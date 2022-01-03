@@ -103,15 +103,16 @@ class Play_game:
             for agent in arena.agents_lst:
                 if agent.dest == -1:
                     # change this to our algorithm of move and choose next edge
-                    if agent.agents_path[0] != agent.src:
-                        next_node = agent.agents_path[0]
-                    else:
-                        agent.agents_path.remove(agent.agents_path[0])
-                        next_node = agent.agents_path[0]
-                    client.choose_next_edge(
-                        '{"agent_id":'+str(agent.id)+', "next_node_id":'+str(next_node)+'}')
-                    ttl = client.time_to_end()
-                    print(ttl, client.get_info())
+                    if len(agent.agents_path) > 0:
+                        if agent.agents_path[0] != agent.src:
+                            next_node = agent.agents_path[0]
+                        else:
+                            agent.agents_path.remove(agent.agents_path[0])
+                            next_node = agent.agents_path[0]
+                        client.choose_next_edge(
+                            '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
+                        ttl = client.time_to_end()
+                        print(ttl, client.get_info())
                 client.move()
             # need to add methods for when we call the move
         pygame.quit()

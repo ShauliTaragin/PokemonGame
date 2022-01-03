@@ -48,6 +48,7 @@ class Arena:
             self.pokemons_lst.clear()
             pokemons = json.loads(json_file,
                                   object_hook=lambda d: SimpleNamespace(**d)).Pokemons
+            print(pokemons)
             pokemons = [p.Pokemon for p in pokemons]
             for i in pokemons:
                 d: str = i.pos
