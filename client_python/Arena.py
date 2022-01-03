@@ -54,20 +54,25 @@ class Arena:
                 x, y, z = d.split(',')
                 edge = self.graph_algo.get_edge_on_point((float(x), float(y), float(z)), i.type)
                 location = GeoLocation((float(x), float(y), float(z)))
-                poki = Pokemon(i.value, i.type, location, edge)
-                if poki.curr_edge.src not in self.dijkstra_list:
-                    g_algo = GraphAlgo(self.graph_algo.graph)
-                    # init the dijkstra class
-                    dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
-                    dijkstra.dijkstra_Getmin_distances(poki.curr_edge.src)
-                    self.dijkstra_list[poki.curr_edge.src] = list(dijkstra.heap_nodes)
-                # already_in_list=-1
-                # for current_pokes in self.actual_pokemons_in_graph:
-                #     if(current_pokes.pos.x == poki.pos.x and current_pokes.pos.y == poki.pos.y
-                #             and poki.curr_edge == current_pokes.curr_edge and poki.value == current_pokes.value):
-                #         already_in_list = 0
-                # if already_in_list == -1:
-                self.pokemons_lst.append(poki)
+                found = 0
+                for already_in in self.actual_pokemons_in_graph:
+                    if already_in.pos.x == location.x and already_in.pos.y == location.y:
+                        found = 1
+                if found == 0:
+                    poki = Pokemon(i.value, i.type, location, edge)
+                    if poki.curr_edge.src not in self.dijkstra_list:
+                        g_algo = GraphAlgo(self.graph_algo.graph)
+                        # init the dijkstra class
+                        dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
+                        dijkstra.dijkstra_Getmin_distances(poki.curr_edge.src)
+                        self.dijkstra_list[poki.curr_edge.src] = list(dijkstra.heap_nodes)
+                    # already_in_list=-1
+                    # for current_pokes in self.actual_pokemons_in_graph:
+                    #     if(current_pokes.pos.x == poki.pos.x and current_pokes.pos.y == poki.pos.y
+                    #             and poki.curr_edge == current_pokes.curr_edge and poki.value == current_pokes.value):
+                    #         already_in_list = 0
+                    # if already_in_list == -1:
+                    self.pokemons_lst.append(poki)
 
         except Exception:
             print("problem with json load pokemon")
