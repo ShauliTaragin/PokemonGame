@@ -26,15 +26,13 @@ class Play_game:
         the_weight_of_path, the_path = arena.graph_algo.shortest_path(list_of_stops[0], list_of_stops[1].curr_edge.src)
         the_weight_of_path += list_of_stops[1].curr_edge.weight
         the_path.append(list_of_stops[1].curr_edge.dst)
-        for i in range[1:len(list_of_stops) - 1]:
-            temp_path, current_weight = arena.graph_algo.shortest_path(list_of_stops[i].curr_edge.dst
+        for i in range(1, len(list_of_stops) - 1):
+            current_weight, temp_path = arena.graph_algo.shortest_path(list_of_stops[i].curr_edge.dst
                                                                        , list_of_stops[i + 1].curr_edge.src)
             temp_path.append(list_of_stops[i + 1].curr_edge.dst)
             current_weight += list_of_stops[i + 1].curr_edge.weight
             the_path.extend(temp_path)
             the_weight_of_path += current_weight
-        the_path.append(list_of_stops[-1].curr_edge.dst)
-        the_weight_of_path += list_of_stops[-1].curr_edge.weight
         return the_weight_of_path, the_path
 
     def get_all_permutations(self, pokemon_list) -> list:
@@ -53,19 +51,20 @@ class Play_game:
             for i in permutations_of_all_pokemons:
                 if agent.dest == -1:  # if the agent is on a node we add the node to the path
                     i = list(i)
+                    i.insert(0, agent.src)
                 else:
+                    i = list(i)
                     i.insert(0, agent.dest)
                 temp_tuple = self.calculate_time_of_path(arena, i)
                 temp_dist, temp_path = temp_tuple[0], temp_tuple[1]
-                if temp_dist/agent.speed < min_weight:
+                if temp_dist / agent.speed < min_weight:
                     min_path = temp_path
-                    min_weight = temp_dist/agent.speed
+                    min_weight = temp_dist / agent.speed
                     min_agent = agent
-        min_agent.agents_path = min_path
-        min_agent.pokemons_to_eat.append(Pokemon)
+        arena.agents_lst[min_agent.id].agents_path = min_path
+        arena.agents_lst[min_agent.id].pokemons_to_eat.append(pokemon)
         for agent in agents_list:
-            if agent is not min_agent:
-                agent.permutaion.clear()
+            agent.permutaion.clear()
         return min_agent
 
     def run_game(self):
@@ -98,19 +97,23 @@ class Play_game:
             # find which agent goes to which pokemon
             for pokemon in arena.pokemons_lst:
                 # need to allocate only for a pokemon which is new
-                if pokemon not in arena.actual_pokemons_in_graph:
+                if not pokemon in arena.actual_pokemons_in_graph:
                     agents_id_allocated = self.AllocateAgent(arena.agents_lst, pokemon, arena)
                     arena.actual_pokemons_in_graph.append(pokemon)
             for agent in arena.agents_lst:
                 if agent.dest == -1:
                     # change this to our algorithm of move and choose next edge
-                    next_node = arena.graph_algo.graph.nodes.get(agent.agents_path[0])
+                    if agent.agents_path[0] != agent.src:
+                        next_node = agent.agents_path[0]
+                    else:
+                        agent.agents_path.remove(agent.agents_path[0])
+                        next_node = agent.agents_path[0]
                     client.choose_next_edge(
-                        '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
+                        '{"agent_id":'+str(agent.id)+', "next_node_id":'+str(next_node)+'}')
                     ttl = client.time_to_end()
                     print(ttl, client.get_info())
+                    client.move()
             # need to add methods for when we call the move
-            client.move()
         pygame.quit()
 
 

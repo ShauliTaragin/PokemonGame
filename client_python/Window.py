@@ -9,16 +9,20 @@ class Window:
         self.graph_algo = graph_algo
         self.agents = agents
         self.pokemons = pokemons
-
+        self.pygame = pygame
+        self.screen = screen
+        self.clock = self.pygame.time.Clock()
+        self.draw_game()
+    def draw_game(self):
         radius = 15
         FONT = pygame.font.SysFont('Arial', 20, bold=True)
         # refresh surface
-        screen.fill(Color(0, 0, 0))
+        self.screen.fill(Color(0, 0, 0))
 
-        min_x = min(list(graph_algo.graph.nodes.values()), key=lambda n: n.geolocation[0]).geolocation[0]
-        min_y = min(list(graph_algo.graph.nodes.values()), key=lambda n: n.geolocation[1]).geolocation[1]
-        max_x = max(list(graph_algo.graph.nodes.values()), key=lambda n: n.geolocation[0]).geolocation[0]
-        max_y = max(list(graph_algo.graph.nodes.values()), key=lambda n: n.geolocation[1]).geolocation[1]
+        min_x = min(list(self.graph_algo.graph.nodes.values()), key=lambda n: n.geolocation[0]).geolocation[0]
+        min_y = min(list(self.graph_algo.graph.nodes.values()), key=lambda n: n.geolocation[1]).geolocation[1]
+        max_x = max(list(self.graph_algo.graph.nodes.values()), key=lambda n: n.geolocation[0]).geolocation[0]
+        max_y = max(list(self.graph_algo.graph.nodes.values()), key=lambda n: n.geolocation[1]).geolocation[1]
 
         def scale(data, min_screen, max_screen, min_data, max_data):
             """
@@ -31,25 +35,25 @@ class Window:
 
         def my_scale(data, x=False, y=False):
             if x:
-                return scale(data, 50, screen.get_width() - 50, min_x, max_x)
+                return scale(data, 50, self.screen.get_width() - 50, min_x, max_x)
             if y:
-                return scale(data, 50, screen.get_height() - 50, min_y, max_y)
+                return scale(data, 50, self.screen.get_height() - 50, min_y, max_y)
 
         # draw nodes
-        for n in graph_algo.graph.nodes.values():
+        for n in self.graph_algo.graph.nodes.values():
             x = my_scale(n.geolocation[0], x=True)
             y = my_scale(n.geolocation[1], y=True)
 
             # its just to get a nice Intialiased circle
-            gfxdraw.filled_circle(screen, int(x), int(y),
+            gfxdraw.filled_circle(self.screen, int(x), int(y),
                                   radius, Color(64, 80, 174))
-            gfxdraw.aacircle(screen, int(x), int(y),
+            gfxdraw.aacircle(self.screen, int(x), int(y),
                              radius, Color(255, 255, 255))
 
             # draw the node id
             id_srf = FONT.render(str(n.key), True, Color(255, 255, 255))
             rect = id_srf.get_rect(center=(x, y))
-            screen.blit(id_srf, rect)
+            self.screen.blit(id_srf, rect)
             # draw edges
             for e in n.outEdges.values():
                 # find the edge nodes
@@ -63,27 +67,27 @@ class Window:
                 dest_y = my_scale(dest.y, y=True)
 
                 # draw the line
-                pygame.draw.line(screen, Color(61, 72, 126),
+                pygame.draw.line(self.screen, Color(61, 72, 126),
                                  (src_x, src_y), (dest_x, dest_y))
 
 
 
         # draw agents
-        for agent in agents:
+        for agent in self.agents:
             x = my_scale(agent.pos.x, x=True)
             y = my_scale(agent.pos.y, y=True)
-            pygame.draw.circle(screen, Color(122, 61, 23),
+            pygame.draw.circle(self.screen, Color(122, 61, 23),
                                (int(x), int(y)), radius*0.6666)
         # draw pokemons (note: should differ (GUI wise) between the up and the down pokemons (currently they are marked in the same way).
-        for p in pokemons:
+        for p in self.pokemons:
             x = my_scale(p.pos.x, x=True)
             y = my_scale(p.pos.y, y=True)
-            pygame.draw.circle(screen, Color(0, 255, 255), (int(x), int(y)), radius*0.6666)
+            pygame.draw.circle(self.screen, Color(0, 255, 255), (int(x), int(y)), radius*0.6666)
 
         # update screen changes
         display.update()
-
+        self.clock.tick(60)
         # refresh rate
-        clock.tick(60)
+
 
         # choose next edge

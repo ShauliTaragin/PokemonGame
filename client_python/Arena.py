@@ -61,6 +61,12 @@ class Arena:
                     dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
                     dijkstra.dijkstra_Getmin_distances(poki.curr_edge.src)
                     self.dijkstra_list[poki.curr_edge.src] = list(dijkstra.heap_nodes)
+                # already_in_list=-1
+                # for current_pokes in self.actual_pokemons_in_graph:
+                #     if(current_pokes.pos.x == poki.pos.x and current_pokes.pos.y == poki.pos.y
+                #             and poki.curr_edge == current_pokes.curr_edge and poki.value == current_pokes.value):
+                #         already_in_list = 0
+                # if already_in_list == -1:
                 self.pokemons_lst.append(poki)
 
         except Exception:
