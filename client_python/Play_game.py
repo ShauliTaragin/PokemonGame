@@ -19,6 +19,8 @@ class Play_game:
         self.grade = 0
         self.id: int
         self.scanerio_num: int
+    def distance_between_agent2Pokemon(self , agent: Agent , pokemon_list: ):
+
 
     def calculate_time_of_path(self, arena: Arena, list_of_stops: list) -> (float, list):
         the_path: list
@@ -79,7 +81,7 @@ class Play_game:
         agents_list = arena.place_agents_at_beginning()
         for i in agents_list:
             client.add_agent(agents_list[i])
-        arena.update_agent_lst(client.get_agents())
+        arena.create_agents(client.get_agents())
         pygame.init()
         screen = display.set_mode((WIDTH, HEIGHT), depth=32, flags=RESIZABLE)
         clock = pygame.time.Clock()
@@ -113,7 +115,9 @@ class Play_game:
                             '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
                         ttl = client.time_to_end()
                         print(ttl, client.get_info())
-                client.move()
+                        client.move()
+                if
+
             # need to add methods for when we call the move
         pygame.quit()
 
