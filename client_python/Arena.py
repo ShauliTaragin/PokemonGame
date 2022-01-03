@@ -78,7 +78,33 @@ class Arena:
     """
 
     def update_agent_lst(self, json_file):
-        self.agents_lst.clear()
+        #self.agents_lst.clear()
+        try:
+            agents = json.loads(json_file,
+                                object_hook=lambda d: SimpleNamespace(**d)).Agents
+            agents = [agent.Agent for agent in agents]
+            for i in agents:
+                d: str = i.pos
+                x, y, z = d.split(',')
+                location = GeoLocation((float(x), float(y), float(z)))
+                double007 = Agent(i.id, location, i.value, i.src, i.dest, i.speed)
+                if double007.src not in self.dijkstra_list:
+                    g_algo = GraphAlgo(self.graph_algo.graph)
+                    # init the dijkstra class
+                    dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
+                    dijkstra.dijkstra_Getmin_distances(double007.src)
+                    self.dijkstra_list[double007.src] = list(dijkstra.heap_nodes)
+
+                # self.agents_lst.append(double007)
+
+                self.agents_lst[double007.id].pos = double007.pos
+                self.agents_lst[double007.id].value = double007.value
+                self.agents_lst[double007.id].src = double007.src
+                self.agents_lst[double007.id].dest = double007.dest
+                self.agents_lst[double007.id].speed = double007.speed
+        except Exception:
+            print("problem with json load pokemon")
+    def create_agents(self, json_file):
         try:
             agents = json.loads(json_file,
                                 object_hook=lambda d: SimpleNamespace(**d)).Agents
