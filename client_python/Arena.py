@@ -89,6 +89,7 @@ class Arena:
     """
 
     def update_agent_lst(self, json_file):
+        print("this is the json file for agents   " + json_file )
         # self.agents_lst.clear()
         try:
             agents = json.loads(json_file,

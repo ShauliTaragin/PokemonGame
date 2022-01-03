@@ -108,7 +108,7 @@ class Play_game:
             arena.update_pokemons_lst(client.get_pokemons())
             arena.update_agent_lst(client.get_agents())
             # here need to put update game info
-            # Window(arena.graph_algo, arena.agents_lst, arena.actual_pokemons_in_graph, pygame, screen, clock)
+            Window(arena.graph_algo, arena.agents_lst, arena.actual_pokemons_in_graph, pygame, screen, clock)
             for events in pygame.event.get():
                 if events.type == pygame.QUIT:
                     pygame.quit()
@@ -143,7 +143,7 @@ class Play_game:
                         self.grade += agent.value
                         agent.pokemons_to_eat.remove(poke)
                         arena.actual_pokemons_in_graph.remove(poke)
-            clock.tick(0)
+            clock.tick(60)
             client.move()
             # need to add methods for when we call the move
         pygame.quit()

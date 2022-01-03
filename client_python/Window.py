@@ -58,7 +58,7 @@ class Window:
         radius = 15
         FONT = pygame.font.SysFont('Arial', 20, bold=True)
         # refresh surface
-        # self.screen.fill(Color(0, 0, 0))
+        self.screen.fill(Color(0, 0, 0))
 
         min_x = min(list(self.graph_algo.graph.nodes.values()), key=lambda n: n.geolocation[0]).geolocation[0]
         min_y = min(list(self.graph_algo.graph.nodes.values()), key=lambda n: n.geolocation[1]).geolocation[1]
@@ -127,7 +127,7 @@ class Window:
             self.pygame.draw.circle(self.screen, Color(0, 255, 255), (int(x), int(y)), radius*0.6666)
 
         # update screen changes
-        # self.pygame.display.update()
-        self.clock.tick(30)
+        self.pygame.display.update()
+        self.clock.tick(120)
         # refresh rate
 
