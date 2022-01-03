@@ -1,3 +1,4 @@
+import math as mh
 import sys
 
 from client import Client
@@ -19,8 +20,11 @@ class Play_game:
         self.grade = 0
         self.id: int
         self.scanerio_num: int
-    def distance_between_agent2Pokemon(self , agent: Agent , pokemon_list: ):
+        self.EPS = 0.001
+        self.move_count = 0;
 
+    def distance_between_agent2Pokemon(self, agent: Agent, pokemon: Pokemon) -> float:
+        return mh.sqrt(((agent.pos.x - pokemon.pos.x) ** 2) + ((agent.pos.y - pokemon.pos.y) ** 2))
 
     def calculate_time_of_path(self, arena: Arena, list_of_stops: list) -> (float, list):
         the_path: list
@@ -91,7 +95,7 @@ class Play_game:
             arena.update_pokemons_lst(client.get_pokemons())
             arena.update_agent_lst(client.get_agents())
             # here need to put update game info
-            Window(arena.graph_algo, arena.agents_lst, arena.pokemons_lst, pygame, screen, clock)
+            Window(arena.graph_algo, arena.agents_lst, arena.actual_pokemons_in_graph, pygame, screen, clock)
             for events in pygame.event.get():
                 if events.type == pygame.QUIT:
                     pygame.quit()
@@ -116,7 +120,12 @@ class Play_game:
                         ttl = client.time_to_end()
                         print(ttl, client.get_info())
                         client.move()
-                if
+                        self.move_count += 1
+                for poke in agent.pokemons_to_eat:
+                    if self.distance_between_agent2Pokemon(agent, poke) < self.EPS:
+                        client.move()
+                        self.move_count += 1
+                        self.grade += agent.value
 
             # need to add methods for when we call the move
         pygame.quit()
