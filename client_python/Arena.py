@@ -62,12 +62,12 @@ class Arena:
                         break
                 if not found_pokemon_exists:
                     poki = Pokemon(i.value, i.type, location, edge)
-                    if poki.curr_edge.src not in self.dijkstra_list:
-                        g_algo = GraphAlgo(self.graph_algo.graph)
-                        # init the dijkstra class
-                        dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
-                        dijkstra.dijkstra_Getmin_distances(poki.curr_edge.src)
-                        self.dijkstra_list[poki.curr_edge.src] = list(dijkstra.heap_nodes)
+                    # if poki.curr_edge.src not in self.dijkstra_list:
+                    #     g_algo = GraphAlgo(self.graph_algo.graph)
+                    #     # init the dijkstra class
+                    #     dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
+                    #     dijkstra.dijkstra_Getmin_distances(poki.curr_edge.src)
+                    #     self.dijkstra_list[poki.curr_edge.src] = list(dijkstra.heap_nodes)
                     # already_in_list=-1
                     # for current_pokes in self.actual_pokemons_in_graph:
                     #     if(current_pokes.pos.x == poki.pos.x and current_pokes.pos.y == poki.pos.y
@@ -98,12 +98,12 @@ class Arena:
                 location = GeoLocation((float(x), float(y), float(z)))
                 if already_exists is True:
                     double007 = Agent(i.id, location, i.value, i.src, i.dest, i.speed)
-                    if double007.src not in self.dijkstra_list:
-                        g_algo = GraphAlgo(self.graph_algo.graph)
-                        # init the dijkstra class
-                        dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
-                        dijkstra.dijkstra_Getmin_distances(double007.src)
-                        self.dijkstra_list[double007.src] = list(dijkstra.heap_nodes)
+                    # if double007.src not in self.dijkstra_list:
+                    #     g_algo = GraphAlgo(self.graph_algo.graph)
+                    #     # init the dijkstra class
+                    #     dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
+                    #     dijkstra.dijkstra_Getmin_distances(double007.src)
+                    #     self.dijkstra_list[double007.src] = list(dijkstra.heap_nodes)
                     self.agents_lst.append(double007)
                 else:
                     for existing_agent in self.agents_lst:
@@ -114,10 +114,25 @@ class Arena:
             print("problem with json load pokemon")
 
     def place_agents_at_beginning(self, first_pkoemons: list)-> dict:
+        g_algo = GraphAlgo(self.graph_algo.graph)
+        for node in self.graph_algo.graph.nodes.values():
+            # init the dijkstra class
+            dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
+            dijkstra.dijkstra_Getmin_distances(node.key)
+            self.dijkstra_list[node.key] = list(dijkstra.heap_nodes)
         i = 0
         list_of_agent = {}
-        while i < self.info_dict["agents"] and i < self.info_dict["pokemons"]:
-            pokemon_src = first_pkoemons[i].curr_edge.src
+        counter_of_edges = {}
+        while i <self.info_dict["pokemons"]:
+            if first_pkoemons[i].curr_edge.src in counter_of_edges.keys():
+                counter_of_edges[first_pkoemons[i].curr_edge.src] += 1
+            else:
+                counter_of_edges[first_pkoemons[i].curr_edge.src] = 1
+            i+=1
+        var = {k: v for k, v in sorted(counter_of_edges.items(), key=lambda item: item[1], reverse=True)}
+        i=0
+        for counter in var:
+            pokemon_src = counter
             string_of_src="{}".format(pokemon_src)
             json_to_agent = "{\"id\":"+string_of_src+"}"
             list_of_agent[i]=json_to_agent

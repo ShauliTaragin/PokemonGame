@@ -1,12 +1,17 @@
+import math as mh
 import sys
 import time as tm
+from typing import Any
+
+from api.GeoLocation import GeoLocation
 from client import Client
 import json
 from pygame import gfxdraw
 import pygame
 import itertools
 from pygame import *
-
+import threading
+import multiprocessing
 from client_python.Agent import Agent
 from client_python.Arena import Arena
 from client_python.Pokemon import Pokemon
@@ -16,32 +21,20 @@ from client_python.Window import Window
 class Play_game:
     # dont forget to add threads
     def __init__(self):
-        self.moves = 1
+        self.moves = 0
         self.grade = 0
         self.id: int
         self.scanerio_num: int
 
     def calculate_time_of_path(self, arena: Arena, list_of_stops: list) -> (float, list):
-        the_path: list = []
         the_weight_of_path: float
-        check_if_src_agent_equal_pokemon_src = []
-        tuple_of_dijkstra_ans = arena.graph_algo.shortest_path(list_of_stops[0], list_of_stops[1].curr_edge.src)
-        the_weight_of_path, check_if_src_agent_equal_pokemon_src = tuple_of_dijkstra_ans[0], tuple_of_dijkstra_ans[1]
-        if the_weight_of_path != 0:
-            the_path.extend(check_if_src_agent_equal_pokemon_src)
-        else:
-            the_path.append(list_of_stops[0])
+        the_weight_of_path = arena.dijkstra_list[list_of_stops[0]][list_of_stops[1].curr_edge.src]
         the_weight_of_path += list_of_stops[1].curr_edge.weight
-        if len(list_of_stops) == 2:
-            the_path.append(list_of_stops[1].curr_edge.dst)
         for i in range(1, len(list_of_stops) - 1):
-            current_weight, temp_path = arena.graph_algo.shortest_path(list_of_stops[i].curr_edge.dst
-                                                                       , list_of_stops[i + 1].curr_edge.src)
-            temp_path.append(list_of_stops[i + 1].curr_edge.dst)
+            current_weight = arena.dijkstra_list[list_of_stops[i].curr_edge.dst][list_of_stops[i + 1].curr_edge.src]
             current_weight += list_of_stops[i + 1].curr_edge.weight
-            the_path.extend(temp_path)
             the_weight_of_path += current_weight
-        return the_weight_of_path, the_path
+        return the_weight_of_path
 
     def get_all_permutations(self, pokemon_list) -> list:
         return list(itertools.permutations(pokemon_list))
@@ -49,8 +42,8 @@ class Play_game:
     def AllocateAgent(self, agents_list, pokemon: Pokemon, arena: Arena) -> int:  # return agents id
         min_weight = sys.maxsize  # hold the min weight if an agent would pick up the pokemon
         min_agent = sys.maxsize  # hold the agent for which we find will pick up the pokemon quickest
-        min_path = []
-        temp_path = []
+        min_permutation = []
+        the_path = []
         temp_dist: float
         for agent in agents_list:
             agent.permutaion.append(pokemon)
@@ -64,20 +57,59 @@ class Play_game:
                 else:
                     i = list(i)
                     i.insert(0, agent.dest)
-                temp_tuple = self.calculate_time_of_path(arena, i)
-                temp_dist, temp_path = temp_tuple[0], temp_tuple[1]
+                temp_dist = self.calculate_time_of_path(arena, i)
                 if temp_dist / agent.speed < min_weight:
-                    min_path = temp_path
+                    min_permutation = i
                     min_weight = temp_dist / agent.speed
                     min_agent = agent.id
-        arena.agents_lst[min_agent].agents_path = min_path
+
+        tuple_of_dijkstra_ans = arena.graph_algo.shortest_path(min_permutation[0], min_permutation[1].curr_edge.src)
+        the_weight_of_path, check_if_src_agent_equal_pokemon_src = tuple_of_dijkstra_ans[0], tuple_of_dijkstra_ans[1]
+        if the_weight_of_path != 0:
+            the_path.extend(check_if_src_agent_equal_pokemon_src)
+        else:
+            the_path.append(min_permutation[0])
+        the_weight_of_path += min_permutation[1].curr_edge.weight
+        if len(min_permutation) == 2:
+            the_path.append(min_permutation[1].curr_edge.dst)
+        for i in range(1, len(min_permutation) - 1):
+            # if min_permutation[i].curr_edge.src != min_permutation[i + 1].curr_edge.src:
+            current_weight, temp_path = arena.graph_algo.shortest_path(min_permutation[i].curr_edge.dst
+                                                                       , min_permutation[i + 1].curr_edge.src)
+            temp_path.append(min_permutation[i + 1].curr_edge.dst)
+            current_weight += min_permutation[i + 1].curr_edge.weight
+            the_path.extend(temp_path)
+            the_weight_of_path += current_weight
+
+        arena.agents_lst[min_agent].agents_path = the_path
         arena.agents_lst[min_agent].pokemons_to_eat.append(pokemon)
         for agent in agents_list:
             agent.permutaion.clear()
         return min_agent
 
+    def dist_between_points(self, point1: GeoLocation, point2: GeoLocation) -> float:
+        return mh.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2)
+
+    def thread_paint(self, graph_algo, agents_lst, pokemons_lst, pygame, screen, clock):
+        try:
+            Window(graph_algo, agents_lst, pokemons_lst, pygame, screen, clock)
+            sys.exit()
+        except Exception:
+            return
+
+    def thread_function(self, client_of_thread, time_to_sleep, time_of_calculate):
+        try:
+            time_now = tm.time()
+            tm.sleep(time_to_sleep-(time_of_calculate-time_now))
+            client_of_thread.move()
+            print("was moved")
+            sys.exit()
+        except Exception:
+            return
+
     def run_game(self):
-        print("here")
+        # try:
+        threads = []
         HOST = '127.0.0.1'
         PORT = 6666
         WIDTH, HEIGHT = 1080, 720
@@ -99,7 +131,10 @@ class Play_game:
             pokemons_to_allocate = arena.update_pokemons_lst(client.get_pokemons(), False)
             arena.update_agent_lst(client.get_agents(), False)
             # here need to put update game info
-            Window(arena.graph_algo, arena.agents_lst, arena.pokemons_lst, pygame, screen, clock)
+            y = threading.Thread(target=self.thread_paint, args=(arena.graph_algo, arena.agents_lst,
+                                                                 arena.pokemons_lst, pygame, screen, clock))
+            y.start()
+            y.join()
             for events in pygame.event.get():
                 if events.type == pygame.QUIT:
                     pygame.quit()
@@ -115,36 +150,58 @@ class Play_game:
                         if agent.agents_path[0] != agent.src:
                             next_node = agent.agents_path[0]
                         else:
-                            agent.agents_path.remove(agent.agents_path[0])
+                            agent.agents_path.pop(0)
                             if len(agent.agents_path) > 0:
                                 next_node = agent.agents_path[0]
                             else:
                                 continue
                         client.choose_next_edge(
                             '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
-                        # clock.tick(10)
-                        # client.move()
-                        # self.moves += 1
                         ttl = client.time_to_end()
                         print(ttl, client.get_info())
+                    arena.update_agent_lst(client.get_agents(), False)
                 for pokemon_close_enough in agent.pokemons_to_eat:
                     if agent.src == pokemon_close_enough.curr_edge.src \
                             and agent.dest == pokemon_close_enough.curr_edge.dst:  # if close enough to pokemon
+                        dist_from_src_to_dst = self.dist_between_points(pokemon_close_enough.curr_edge.src_location,
+                                                                        pokemon_close_enough.curr_edge.dst_location)
+                        dist_from_src_to_pokemon = self.dist_between_points(pokemon_close_enough.curr_edge.src_location,
+                                                                            pokemon_close_enough.pos)
+                        time_now = tm.time()
+                        weight_of_edge = pokemon_close_enough.curr_edge.weight
+                        speed_of_agent = agent.speed
+                        the_part_of_the_edge = dist_from_src_to_pokemon / dist_from_src_to_dst
+                        the_part_weight = weight_of_edge * the_part_of_the_edge
+                        time_to_run_on_edge = the_part_weight / speed_of_agent
+                        x = threading.Thread(target=self.thread_function, args=(client, time_to_run_on_edge, time_now))
+                        threads.append(x)
+                        x.start()
+                        self.moves += 1
                         arena.pokemons_lst.remove(pokemon_close_enough)  # note that if it work
                         agent.pokemons_to_eat.remove(pokemon_close_enough)
-                        curr_time = tm.time()
-                        dif_in_times = curr_time - start_time
-                        # if (dif_in_times / self.moves) < 10:
-                        #     clock.tick(10)
-                        #     client.move()
-                        #     self.moves += 1
                 curr_time = tm.time()
-                dif_in_times = curr_time - start_time
+                dif_in_times = (curr_time - start_time)
                 if (dif_in_times / self.moves) < 10:
-                    clock.tick(10)
-                    client.move()
+                    if int(10 - (dif_in_times / self.moves)) - 1 > 1:
+                        clock.tick(int(10 - (dif_in_times / self.moves) - 1))
+                        client.move()
+                    else:
+                        clock.tick(int(10 - (dif_in_times / self.moves)))
+                        client.move()
+                        self.moves += 1
                     self.moves += 1
+                for index, thread in enumerate(threads):
+                    if not thread.is_alive():
+                        threads.remove(thread)
+                    else:
+                        thread.join()
             # need to add methods for when we call the move
+
+            # client.stop()
+            # client.stop_connection()
+        # except Exception:
+        #     pygame.quit()
+        #     return print("game ended")
         pygame.quit()
 
 
