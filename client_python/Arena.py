@@ -8,13 +8,13 @@ from api.GraphAlgo import GraphAlgo
 from api.Edge import Edge
 from client_python.Agent import Agent
 from client_python.Pokemon import Pokemon
-from client import Client
+from client_python.client import Client
 
 
 class Arena:
     Eps = 0.001
 
-    def __init__(self, game_info: str, client: Client):
+    def __init__(self, game_info: str):
         self.pokemons_lst: [Pokemon] = []
         # self.actual_pokemons_in_graph : [Pokemon] = []
         self.agents_lst: [Agent] = []
@@ -42,7 +42,7 @@ class Arena:
     need to see in which way the server sends the json of the pokems/agent(if its json object ,string, etc..) 
     """
 
-    def update_pokemons_lst(self, json_file, first_iter: bool)-> list:
+    def update_pokemons_lst(self, json_file, first_iter: bool) -> list:
         # self.pokemons_lst.clear()
         try:
             self.pokemons_lst.clear()
@@ -87,7 +87,7 @@ class Arena:
     need to see in which way the server sends the json of the pokems/agent(if its json object ,string, etc..) 
     """
 
-    def update_agent_lst(self, json_file , already_exists:bool):
+    def update_agent_lst(self, json_file, already_exists: bool):
         try:
             agents = json.loads(json_file,
                                 object_hook=lambda d: SimpleNamespace(**d)).Agents
@@ -113,7 +113,7 @@ class Arena:
         except Exception:
             print("problem with json load pokemon")
 
-    def place_agents_at_beginning(self, first_pkoemons: list)-> dict:
+    def place_agents_at_beginning(self, first_pkoemons: list) -> dict:
         g_algo = GraphAlgo(self.graph_algo.graph)
         for node in self.graph_algo.graph.nodes.values():
             # init the dijkstra class
@@ -123,23 +123,23 @@ class Arena:
         i = 0
         list_of_agent = {}
         counter_of_edges = {}
-        while i <self.info_dict["pokemons"]:
+        while i < self.info_dict["pokemons"]:
             if first_pkoemons[i].curr_edge.src in counter_of_edges.keys():
                 counter_of_edges[first_pkoemons[i].curr_edge.src] += 1
             else:
                 counter_of_edges[first_pkoemons[i].curr_edge.src] = 1
-            i+=1
+            i += 1
         var = {k: v for k, v in sorted(counter_of_edges.items(), key=lambda item: item[1], reverse=True)}
-        i=0
+        i = 0
         for counter in var:
             pokemon_src = counter
-            string_of_src="{}".format(pokemon_src)
-            json_to_agent = "{\"id\":"+string_of_src+"}"
-            list_of_agent[i]=json_to_agent
+            string_of_src = "{}".format(pokemon_src)
+            json_to_agent = "{\"id\":" + string_of_src + "}"
+            list_of_agent[i] = json_to_agent
             i += 1
         return list_of_agent
 
-    def update_game_info(self , game_info ):
+    def update_game_info(self, game_info):
         self.info_dict = {}
         if game_info is not None:
             namespace = json.loads(game_info,

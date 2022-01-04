@@ -116,8 +116,9 @@ class Play_game:
         start_time = tm.time()
         client = Client()
         client.start_connection(HOST, PORT)
-        arena = Arena(client.get_info(), client)
+        arena = Arena(client.get_info())
         first_pokemons = arena.update_pokemons_lst(client.get_pokemons(), True)
+        print(client.get_pokemons())
         agents_list = arena.place_agents_at_beginning(first_pokemons)
         for i in agents_list:
             client.add_agent(agents_list[i])
