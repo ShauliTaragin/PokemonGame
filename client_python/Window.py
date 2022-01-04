@@ -1,9 +1,12 @@
+from tkinter import Button
+
 from api.GraphAlgo import GraphAlgo
 from pygame import gfxdraw
 import pygame
 from pygame import *
 import math as mh
 import os
+
 
 class Window:
     def __init__(self ,graph_algo: GraphAlgo ,agents: list , pokemons:list , pygame , screen, clock):
@@ -56,12 +59,55 @@ class Window:
         picachu_img = self.pygame.image.load(r'..\data\PikachuImage.png')
         squirtel_img = self.pygame.image.load(r'..\data\squirtle-pokemons-squirtle.png')
         background_img = self.pygame.image.load(r'..\data\background.png')
+
         radius = 15
         FONT = pygame.font.SysFont('Arial', 20, bold=True)
+
         # refresh surface
         # self.screen.fill(Color(0, 0, 0))
         background = pygame.transform.scale(background_img, (1080, 720))
         self.screen.blit(background , (0,0))
+
+        # main_text = 0
+        # self.screen.blit(text, (xwidth, yheight))
+
+        color = (0, 0, 0)
+
+        # light shade of the button
+        color_light = (170, 170, 170)
+
+        # dark shade of the button
+        color_dark = (255, 255, 25)
+
+        # stores the width of the
+        # screen into a variable
+        width = self.screen.get_width()
+
+        # stores the height of the
+        # screen into a variable
+        height = self.screen.get_height()
+        xwidth = width/1.05
+        yheight = height/100
+
+        add_width = 40
+        add_height = 30
+
+        text = FONT.render('Quit', True, color)
+
+
+        mouse = pygame.mouse.get_pos()
+
+        for events in self.pygame.event.get():
+            if events.type == pygame.QUIT:
+                self.pygame.quit()
+                exit(0)
+            if events.type == pygame.MOUSEBUTTONDOWN:
+
+                if xwidth <= mouse[0] <= xwidth+add_width and yheight <= mouse[1] <= yheight+add_height:
+                    # prints current location of mouse
+                    self.pygame.quit()
+
+
         min_x = min(list(self.graph_algo.graph.nodes.values()), key=lambda n: n.geolocation[0]).geolocation[0]
         min_y = min(list(self.graph_algo.graph.nodes.values()), key=lambda n: n.geolocation[1]).geolocation[1]
         max_x = max(list(self.graph_algo.graph.nodes.values()), key=lambda n: n.geolocation[0]).geolocation[0]
@@ -121,19 +167,31 @@ class Window:
             y = my_scale(agent.pos.y, y=True)
             self.pygame.draw.circle(self.screen, Color(122, 61, 23),
                                (int(x), int(y)), radius*0.6666)
-            pokaball = pygame.transform.scale(pokaball_img, (30, 30))
+            pokaball = self.pygame.transform.scale(pokaball_img, (30, 30))
             self.screen.blit(pokaball, (int(x)-14, int(y)-12))
         # draw pokemons (note: should differ (GUI wise) between the up and the down pokemons (currently they are marked in the same way).
         for p in self.pokemons:
             x = my_scale(p.pos.x, x=True)
             y = my_scale(p.pos.y, y=True)
             if p.type > 0:
-                picachu = pygame.transform.scale(picachu_img, (35, 35))
+                picachu = self.pygame.transform.scale(picachu_img, (35, 35))
                 self.screen.blit(picachu, (int(x)-15, int(y)-15))
             else:
-                squirtel = pygame.transform.scale(squirtel_img, (40, 33))
+                squirtel = self.pygame.transform.scale(squirtel_img, (40, 33))
                 self.screen.blit(squirtel, (int(x) - 13, int(y) - 13))
             # self.pygame.draw.circle(self.screen, Color(0, 255, 255), (int(x), int(y)), radius*0.6666)
+
+
+        # if mouse is hovered on a button it
+        # changes to lighter shade
+        if xwidth <= mouse[0] <= xwidth + add_width and yheight <= mouse[1] <= yheight + add_height:
+            pygame.draw.rect(self.screen, color_light, [xwidth, yheight, add_width, add_height])
+
+        else:
+            pygame.draw.rect(self.screen, color_dark, [xwidth, yheight , add_width, add_height])
+
+        # superimposing the text onto our button
+        self.screen.blit(text, (xwidth , yheight))
 
         # update screen changes
         self.pygame.display.update()
