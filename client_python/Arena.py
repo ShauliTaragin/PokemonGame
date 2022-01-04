@@ -138,3 +138,20 @@ class Arena:
             list_of_agent[i]=json_to_agent
             i += 1
         return list_of_agent
+
+    def update_game_info(self , game_info ):
+        self.info_dict = {}
+        if game_info is not None:
+            namespace = json.loads(game_info,
+                                   object_hook=lambda d: SimpleNamespace(**d)).GameServer
+            self.info_dict["moves"] = namespace.moves
+            self.info_dict["pokemons"] = namespace.pokemons
+            self.info_dict["is_logged_in"] = namespace.is_logged_in
+            self.info_dict["grade"] = namespace.grade
+            self.info_dict["game_level"] = namespace.game_level
+            self.info_dict["max_user_level"] = namespace.max_user_level
+            self.info_dict["id"] = namespace.id
+            self.info_dict["graph"] = namespace.graph
+            self.info_dict["agents"] = namespace.agents
+        else:
+            self.info_dict = {}

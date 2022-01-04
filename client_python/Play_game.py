@@ -128,12 +128,14 @@ class Play_game:
         pygame.font.init()
         client.start()
         while client.is_running() == 'true':
+            arena.update_game_info(client.get_info())
             for agent in arena.agents_lst:
                 agent.agents_path.clear()
                 agent.pokemons_to_eat.clear()
             arena.update_pokemons_lst(client.get_pokemons(), False)
             arena.update_agent_lst(client.get_agents(), False)
-            Window(arena.graph_algo, arena.agents_lst, arena.pokemons_lst, pygame, screen, clock)
+            print(arena.info_dict)
+            Window(arena, pygame, screen , client.time_to_end())
             # here need to put update game info
             # y = threading.Thread(target=self.thread_paint, args=(arena.graph_algo, arena.agents_lst,
             #                                                      arena.pokemons_lst, pygame, screen, clock))

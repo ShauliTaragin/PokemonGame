@@ -7,16 +7,22 @@ from pygame import *
 import math as mh
 import os
 
+from client_python.Arena import Arena
+
 
 class Window:
-    def __init__(self ,graph_algo: GraphAlgo ,agents: list , pokemons:list , pygame , screen, clock):
-        self.graph_algo = graph_algo
-        self.agents = agents
-        self.pokemons = pokemons
+    def __init__(self ,arena:Arena , pygame , screen , time_to_end):
+        self.graph_algo = arena.graph_algo
+        self.agents:list = arena.agents_lst
+        self.pokemons:list = arena.pokemons_lst
         self.pygame = pygame
         self.screen = screen
         self.clock = self.pygame.time.Clock()
+        self.num_of_moves = arena.info_dict['moves']
+        self.num_of_grade = arena.info_dict['grade']
+        self.time_to_end = time_to_end
         self.draw_game()
+
 
     def draw_arrow_lines(self, scr: pygame.Surface, x1, y1, x2, y2, d, h):
         dx = x2 - x1
@@ -60,6 +66,9 @@ class Window:
         squirtel_img = self.pygame.image.load(r'..\data\squirtle-pokemons-squirtle.png')
         background_img = self.pygame.image.load(r'..\data\background.png')
 
+        width = self.screen.get_width()
+        height = self.screen.get_height()
+
         radius = 15
         FONT = pygame.font.SysFont('Arial', 20, bold=True)
 
@@ -68,8 +77,11 @@ class Window:
         background = pygame.transform.scale(background_img, (1080, 720))
         self.screen.blit(background , (0,0))
 
-        # main_text = 0
-        # self.screen.blit(text, (xwidth, yheight))
+        smallfont = pygame.font.SysFont('Ariel', 35)
+
+        main_text = smallfont.render('Time To End:  {}  Number Of Moves: {}   Grade: {}'.format(  int(self.time_to_end) / 1000  ,self.num_of_moves , self.num_of_grade), True, Color(0,0,0))
+
+        self.screen.blit(main_text, (width/10, height/100))
 
         color = (0, 0, 0)
 
@@ -81,11 +93,7 @@ class Window:
 
         # stores the width of the
         # screen into a variable
-        width = self.screen.get_width()
 
-        # stores the height of the
-        # screen into a variable
-        height = self.screen.get_height()
         xwidth = width/1.05
         yheight = height/100
 
