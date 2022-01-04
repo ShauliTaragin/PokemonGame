@@ -4,7 +4,7 @@ import time as tm
 from typing import Any
 
 from api.GeoLocation import GeoLocation
-from client import Client
+from client_python.client import Client
 import json
 from pygame import gfxdraw
 import pygame
@@ -93,7 +93,6 @@ class Play_game:
     def thread_paint(self, graph_algo, agents_lst, pokemons_lst, pygame, screen, clock):
         try:
             Window(graph_algo, agents_lst, pokemons_lst, pygame, screen, clock)
-            sys.exit()
         except Exception:
             return
 
@@ -131,15 +130,17 @@ class Play_game:
                 agent.pokemons_to_eat.clear()
             arena.update_pokemons_lst(client.get_pokemons(), False)
             arena.update_agent_lst(client.get_agents(), False)
+
+            Window(arena.graph_algo, arena.agents_lst, arena.pokemons_lst, pygame, screen, clock)
             # here need to put update game info
-            y = threading.Thread(target=self.thread_paint, args=(arena.graph_algo, arena.agents_lst,
-                                                                 arena.pokemons_lst, pygame, screen, clock))
-            y.start()
-            y.join()
-            for events in pygame.event.get():
-                if events.type == pygame.QUIT:
-                    pygame.quit()
-                    exit(0)
+            # y = threading.Thread(target=self.thread_paint, args=(arena.graph_algo, arena.agents_lst,
+            #                                                      arena.pokemons_lst, pygame, screen, clock))
+            # y.start()
+            # y.join()
+            # for events in pygame.event.get():
+            #     if events.type == pygame.QUIT:
+            #         pygame.quit()
+            #         exit(0)
             # find which agent goes to which pokemon
             for pokemon in arena.pokemons_lst:
                 # need to allocate only for a pokemon which is new
