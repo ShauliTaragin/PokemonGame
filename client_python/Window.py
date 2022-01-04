@@ -84,7 +84,7 @@ class Window:
 
         # refresh surface
         # self.screen.fill(Color(0, 0, 0))
-        background = pygame.transform.scale(background_img, (1080, 720))
+        background = pygame.transform.scale(background_img, (width, height))
         self.screen.blit(background , (0,0))
 
         smallfont = pygame.font.SysFont('Ariel', 35)
