@@ -17,8 +17,17 @@ from client_python.Arena import Arena
 from client_python.Pokemon import Pokemon
 from client_python.Window import Window
 
+"""
+@:param -> arena : we recieve our arena for which we are working on
+@:param -> list_of_stops : the list of stops which we need to calculate
+@:returns -> float : the sum of the edges weights for which we will have to travel to inorder to visit all stops 
+Our function works in the following manner-
+    our arena holds a list of dijkstra for each node in the graph. we traverse over the list of stops and calculate
+    only how long it will take to travel the graph. How long being the sum of weights of nodes we traveled
+"""
 
-def calculate_time_of_path(arena: Arena, list_of_stops: list) -> (float, list):
+
+def calculate_time_of_path(arena: Arena, list_of_stops: list) -> float:
     the_weight_of_path: float
     the_weight_of_path = arena.dijkstra_list[list_of_stops[0]][list_of_stops[1].curr_edge.src]
     the_weight_of_path += list_of_stops[1].curr_edge.weight
@@ -29,8 +38,29 @@ def calculate_time_of_path(arena: Arena, list_of_stops: list) -> (float, list):
     return the_weight_of_path
 
 
+"""
+:@param -> pokemon_list - the list of pokemons our current agent needs to eat. e.g that have been allocated to him
+:@return -> a list of tuples where each tuple holds a possible permutation for the list of pokemons the agent needs to eat
+"""
+
+
 def get_all_permutations(pokemon_list) -> list:
     return list(itertools.permutations(pokemon_list))
+
+
+"""
+This is our main algorithm
+
+:@param -> agents_list - the list of agents which we have in this scenario and can potentially eat pokemons
+:@param -> pokemon - the list of Pokemon's which we need to allocate 
+:@param -> arena - our arena
+:@return -> the allocated agent
+
+Our algorithm iterates over all our agents and then iterates over all our permutations for catching the pokemons
+for each permutation we calculate with our previous function how long will it take to travel over the whole path
+The permutation for the agent that will catch that pokemon the quickest will be the agent allocated
+Once we found the allocated agent we update his path he will now have to travel and update his pokemon list  
+"""
 
 
 def AllocateAgent(agents_list, pokemon: Pokemon, arena: Arena) -> int:  # return agents id
@@ -45,21 +75,22 @@ def AllocateAgent(agents_list, pokemon: Pokemon, arena: Arena) -> int:  # return
         permutations_of_all_pokemons = get_all_permutations(agent.permutaion)
         for i in permutations_of_all_pokemons:
             if agent.dest == -1:  # if the agent is on a node we add the node to the path
-                # im worried agent is not updated here and dest wont be -1 even tho it needs to
                 i = list(i)
                 i.insert(0, agent.src)
-            else:
+            else:  # otherwise we add his destination to the path
                 i = list(i)
                 i.insert(0, agent.dest)
             temp_dist = calculate_time_of_path(arena, i)
-
+            # if we found the current shortest path update the min path to be that one
             if temp_dist < min_weight:
                 min_permutation = i
                 min_weight = temp_dist
                 min_agent = agent.id
-
+    # now we have found the minimal agent and we just need to update his path.
+    # Updating the agents path using the dijkstra list for each stop on his way
     tuple_of_dijkstra_ans = arena.graph_algo.shortest_path(min_permutation[0], min_permutation[1].curr_edge.src)
     the_weight_of_path, check_if_src_agent_equal_pokemon_src = tuple_of_dijkstra_ans[0], tuple_of_dijkstra_ans[1]
+    # if the agent is currently on the src of the pokemon he needs to eat then dont add that node twice to his path
     if the_weight_of_path != 0:
         the_path.extend(check_if_src_agent_equal_pokemon_src)
     else:
@@ -82,33 +113,45 @@ def AllocateAgent(agents_list, pokemon: Pokemon, arena: Arena) -> int:  # return
     return min_agent
 
 
+# the actual "main" class
 class Play_game:
-    # dont forget to add threads
+
     def __init__(self):
         self.moves = 0
         self.grade = 0
         self.id: int
         self.scanerio_num: int
 
+    """
+    Function to calculate distance on a graph between 2 points. A simple calculation
+    """
+
     def dist_between_points(self, point1: GeoLocation, point2: GeoLocation) -> float:
         return mh.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2)
 
+    # currently not in use
     def thread_paint(self, graph_algo, agents_lst, pokemons_lst, pygame, screen, clock):
         try:
             Window(graph_algo, agents_lst, pokemons_lst, pygame, screen, clock)
         except Exception:
             return
 
+    """
+    our thread ,  for each agent that is about to eat A pokemon we reieve the time it will take him to eat that pokemon
+    and make the thread sleep till that time. when the time comes we move the server thus catching the pokemon
+    """
+
     def thread_function(self, client_of_thread, time_to_sleep):
         try:
-            tm.sleep(time_to_sleep*0.9)
+            tm.sleep(time_to_sleep * 0.9)
             client_of_thread.move()
             sys.exit()
         except Exception:
             return
 
+    # our main function
     def run_game(self):
-        # try:
+        # Simply initializing all our arena with the initial information from the server
         threads = []
         HOST = '127.0.0.1'
         PORT = 6666
@@ -128,7 +171,9 @@ class Play_game:
         clock = pygame.time.Clock()
         pygame.font.init()
         client.start()
+        # starting our game
         while client.is_running() == 'true':
+            # every iteratiion we update our information i.e the pokemons the agent the game info and we redraw our gui
             arena.update_game_info(client.get_info())
             for agent in arena.agents_lst:
                 agent.agents_path.clear()
@@ -136,7 +181,8 @@ class Play_game:
             arena.update_pokemons_lst(client.get_pokemons(), False)
             arena.update_agent_lst(client.get_agents(), False)
             print(arena.info_dict)
-            Window(arena, pygame, screen , client.time_to_end())
+            # calling our gui
+            Window(arena, pygame, screen, client.time_to_end())
             # here need to put update game info
             # y = threading.Thread(target=self.thread_paint, args=(arena.graph_algo, arena.agents_lst,
             #                                                      arena.pokemons_lst, pygame, screen, clock))
@@ -147,14 +193,16 @@ class Play_game:
             #         pygame.quit()
             #         exit(0)
             # find which agent goes to which pokemon
-            for pokemon in arena.pokemons_lst:
+
+            for pokemon in arena.pokemons_lst:  # allocating our pokemons
                 # need to allocate only for a pokemon which is new
                 agents_id_allocated = AllocateAgent(arena.agents_lst, pokemon, arena)
             for agent in arena.agents_lst:
                 if agent.dest == -1:
-                    # change this to our algorithm of move and choose next edge
+                    # if agent is on node the move to our next node in that agents path
                     if len(agent.agents_path) > 0:
                         if agent.agents_path[0] != agent.src:
+                            # only if the agent needs to move to a different node then the one he is on now
                             next_node = agent.agents_path[0]
                         else:
                             agent.agents_path.pop(0)
@@ -162,10 +210,12 @@ class Play_game:
                                 next_node = agent.agents_path[0]
                             else:
                                 continue
+                        # we simply choose the next edge to be the next node in our agents path
                         client.choose_next_edge(
                             '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
                         ttl = client.time_to_end()
                         print(ttl, client.get_info())
+                    #updating our agents list so our main algorithm will always be updated
                     arena.update_agent_lst(client.get_agents(), False)
                 for pokemon_close_enough in agent.pokemons_to_eat:
                     if agent.src == pokemon_close_enough.curr_edge.src \
@@ -174,7 +224,9 @@ class Play_game:
                                                                         pokemon_close_enough.curr_edge.dst_location)
                         dist_from_src_to_pokemon = self.dist_between_points(pokemon_close_enough.curr_edge.src_location,
                                                                             pokemon_close_enough.pos)
-
+                    # We check weather any agent is on the same node as the src of any pokemon and going to the same dest
+                    # if so we calculate the time it will take for that agent to catch that pokemon and send that agent to the
+                    # thread function above making sure he will catch the pokemon on time
                         weight_of_edge = pokemon_close_enough.curr_edge.weight
                         speed_of_agent = agent.speed
                         the_part_of_the_edge = dist_from_src_to_pokemon / dist_from_src_to_dst
@@ -189,6 +241,8 @@ class Play_game:
                         agent.pokemons_to_eat.remove(pokemon_close_enough)
                 curr_time = tm.time()
                 dif_in_times = (curr_time - start_time)
+                # we want to make sure we dont excess the amount of permitted moves therefore we will only move if our
+                # pace of move calling permits it
                 if (dif_in_times / self.moves) < 10:
                     if int(10 - (dif_in_times / self.moves)) - 1 > 0:
                         clock.tick(int(10 - (dif_in_times / self.moves) - 1))
@@ -202,13 +256,7 @@ class Play_game:
                         threads.remove(thread)
                     else:
                         thread.join()
-            # need to add methods for when we call the move
 
-            # client.stop()
-            # client.stop_connection()
-        # except Exception:
-        #     pygame.quit()
-        #     return print("game ended")
         pygame.quit()
 
 
