@@ -14,9 +14,10 @@ class Window:
     """
     Working by mvc we split the window for actually drawing here. In order to be able to draw here we have to receive
     the following arguments
-    @:param -> arena : our arena inorder
-    @:param
-    @:param
+    @:param -> arena : our arena inorder to recieve all our updated agents , pokemons and game info
+    @:param -> pygame : the pygame for which we are working on
+    @:param -> screen : pygame.screen
+    @:param -> time_to_end : The time till the game end. this parameter is in order to print this in our gui
     """
     def __init__(self ,arena:Arena , pygame , screen , time_to_end):
         self.graph_algo = arena.graph_algo
@@ -30,7 +31,9 @@ class Window:
         self.time_to_end = time_to_end
         self.draw_game()
 
-
+    """
+    Same draw_arrow_lines from Ex3
+    """
     def draw_arrow_lines(self, scr: pygame.Surface, x1, y1, x2, y2, d, h):
         dx = x2 - x1
         dy = y2 - y1
@@ -88,7 +91,7 @@ class Window:
 
         main_text = smallfont.render('Time To End:  {}  Number Of Moves: {}   Grade: {}'.format(  int(self.time_to_end) / 1000  ,self.num_of_moves , self.num_of_grade), True, Color(0,0,0))
 
-        self.screen.blit(main_text, (width/10, height/100))
+        self.screen.blit(main_text, (width/5, height/100))
 
         color = (0, 0, 0)
 
@@ -148,11 +151,11 @@ class Window:
             x = my_scale(n.geolocation[0], x=True)
             y = my_scale(n.geolocation[1], y=True)
 
-            # its just to get a nice Intialiased circle
+            #drawing our node
             gfxdraw.filled_circle(self.screen, int(x), int(y),
-                                  radius, Color(64, 80, 174))
+                                  radius, Color(179, 102, 255))
             gfxdraw.aacircle(self.screen, int(x), int(y),
-                             radius, Color(255, 255, 255))
+                             radius, Color(0, 0, 0))
 
             # draw the node id
             id_srf = FONT.render(str(n.key), True, Color(255, 255, 255))
@@ -180,14 +183,18 @@ class Window:
         for agent in self.agents:
             x = my_scale(agent.pos.x, x=True)
             y = my_scale(agent.pos.y, y=True)
+            # drawing our agents using the pokaball image. we place our agents relative to the nodes and edges
             self.pygame.draw.circle(self.screen, Color(122, 61, 23),
                                (int(x), int(y)), radius*0.6666)
             pokaball = self.pygame.transform.scale(pokaball_img, (30, 30))
             self.screen.blit(pokaball, (int(x)-14, int(y)-12))
-        # draw pokemons (note: should differ (GUI wise) between the up and the down pokemons (currently they are marked in the same way).
+
         for p in self.pokemons:
             x = my_scale(p.pos.x, x=True)
             y = my_scale(p.pos.y, y=True)
+            # drawing our Pokemon's using the Picachu and squirrel image.
+            # if the pokemon is of type positive then its picachu otherwise its squirtel
+            # we place our pokemon relative to the nodes and edges
             if p.type > 0:
                 picachu = self.pygame.transform.scale(picachu_img, (35, 35))
                 self.screen.blit(picachu, (int(x)-15, int(y)-15))
@@ -197,21 +204,17 @@ class Window:
             # self.pygame.draw.circle(self.screen, Color(0, 255, 255), (int(x), int(y)), radius*0.6666)
 
 
-        # if mouse is hovered on a button it
-        # changes to lighter shade
+        # if mouse is hovered on a button it changes to a lighter shade and we know if its pressed we quit
         if xwidth <= mouse[0] <= xwidth + add_width and yheight <= mouse[1] <= yheight + add_height:
             pygame.draw.rect(self.screen, color_light, [xwidth, yheight, add_width, add_height])
 
         else:
             pygame.draw.rect(self.screen, color_dark, [xwidth, yheight , add_width, add_height])
 
-        # superimposing the text onto our button
+        #text for quit
         self.screen.blit(text, (xwidth , yheight))
 
         # update screen changes
         self.pygame.display.update()
         self.clock.tick(60)
         # refresh rate
-
-
-        # choose next edge
