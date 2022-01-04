@@ -11,6 +11,7 @@ class Agent:
         self.speed = speed
         self.pos = location #this is position in geo location
         self.curr_node: Node
+        self.current_time_of_path = 0
         self.agents_path = []
         self.pokemons_to_eat = []
         self.permutaion = []

@@ -45,7 +45,7 @@ class Arena:
     def update_pokemons_lst(self, json_file, first_iter: bool)-> list:
         # self.pokemons_lst.clear()
         try:
-            # self.pokemons_lst.clear()
+            self.pokemons_lst.clear()
             pokemons_to_allocate: list = []
             pokemons = json.loads(json_file,
                                   object_hook=lambda d: SimpleNamespace(**d)).Pokemons

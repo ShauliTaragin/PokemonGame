@@ -111,92 +111,7 @@ class GraphAlgo(GraphAlgoInterface):
         except:
             return inf, []
 
-    def TSP(self, node_lst: List[int]) -> (List[int], float):
-        actual_nodes_lst = []
-        # we want to work with a list of nodes rather then a list of the id's of nodes
-        for i in node_lst:
-            actual_nodes_lst.append(self.graph.nodes.get(i))
-        # first we search by a helper function if we even have a path between our node_lst if not we
-        # obviously return none
-        try:
-            best_path = []
-            min_path = sys.maxsize
-            # we will iterate over our node_lst and greedily search whats the best path to take from that node for which
-            # we are iterating over ot reach all nodes in out nodes_lst.
-            for j in range(len(actual_nodes_lst)):
-                hold_cities = list(actual_nodes_lst)
-                current = 0
-                path = []
-                src_i = j
-                dest_i, current_dest = 0, 0
-                src = actual_nodes_lst[src_i].key
-                hold_cities.pop(src_i)
-                path.append(src)
-                ans: float
-                while hold_cities:
-                    min_dist = sys.maxsize
-                    for i in range(len(hold_cities)):
-                        a: int
-                        a = hold_cities[i].key
-                        ans = 0
-                        # if the node we are searching for a path to from our src node is not in the path
-                        # already we find the shortest path to it
-                        if a not in path:
-                            b = self.shortest_path(src, a)
-                            ans = b[0]
-                        dist = ans
-                        # if we found a shorter distance we update that distance and
-                        # the nodes we traveled to be the minimum
-                        if dist != inf:
-                            if dist < min_dist:
-                                min_dist = dist
-                                current_dest = a
-                                dest_i = i
-                        else:
-                            break
-                    current += min_dist
-                    temp_path = self.shortest_path(src, current_dest)[1]
-                    if temp_path is None:
-                        return None  # because this means we couldn't find a path connecting all our nodes
-                    flag_first = True
-                    # iterate over the current founded path and add it to the path
-                    for n in temp_path:
-                        if flag_first:
-                            flag_first = False
-                        else:
-                            path.append(n)
-                    # now the dest became the src
-                    hold_cities.pop(dest_i)
-                    src = current_dest
-                # the path with minimum dist is the best path
-                if current < min_path:
-                    min_path = current
-                    best_path = path
-            return best_path, min_path
-        except:
-            return None
 
-    def centerPoint(self) -> (int, float):
-        min_max_value = sys.maxsize
-        index = 0
-        g_algo = GraphAlgo(self.graph)
-        # init the dijkstra algorithm
-        g1 = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
-        try:
-            # iterate over every node for the algorithm
-            for i in self.graph.nodes.keys():
-                g1.dijkstra_Getmin_distances(i)
-                if g1.max == sys.maxsize:
-                    raise Exception()
-                # asking if the dist from the node with the maximum dist to the current node is the minimum dist
-                if g1.max < min_max_value:
-                    min_max_value = g1.max
-                    index = i
-            # the node with the minimum max dist is the center point 
-            ans = (index, min_max_value)
-            return ans
-        except:
-            return None, inf
 
     def get_edge_on_point(self, geo_location: tuple, type_of_edge: int) -> Edge:
         eps = 0.000000000001
@@ -255,7 +170,6 @@ class GraphAlgo(GraphAlgoInterface):
                 pygame.draw.circle(scr, (0, 0, 0), (x, y), 4)
                 txt = font.render(str(node), 1, (0, 150, 255))
                 scr.blit(txt, (x - 8, y - 19))
-
             pygame.display.flip()
         pygame.quit()
 

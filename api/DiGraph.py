@@ -1,7 +1,6 @@
 import random
 import sys
 
-from api.GraphInterface import GraphInterface
 from api.Node import Node
 from api.GeoLocation import GeoLocation
 import json
@@ -9,13 +8,13 @@ import json
 from api.Edge import Edge
 
 
-class DiGraph(GraphInterface):
+class DiGraph:
 
     def __init__(self, jsonfile: str = None):
         self.nodes = {}
         self._numOfEdges = 0
         self._mc = 0
-        jsonfile = "../"+jsonfile
+        jsonfile = "../" + str(jsonfile)
         if jsonfile is not None:
             with open(jsonfile, 'r') as jsonFile:
                 json_object = json.load(jsonFile)

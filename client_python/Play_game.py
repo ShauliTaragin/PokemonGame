@@ -58,9 +58,10 @@ class Play_game:
                     i = list(i)
                     i.insert(0, agent.dest)
                 temp_dist = self.calculate_time_of_path(arena, i)
-                if temp_dist / agent.speed < min_weight:
+
+                if temp_dist < min_weight:
                     min_permutation = i
-                    min_weight = temp_dist / agent.speed
+                    min_weight = temp_dist
                     min_agent = agent.id
 
         tuple_of_dijkstra_ans = arena.graph_algo.shortest_path(min_permutation[0], min_permutation[1].curr_edge.src)
@@ -80,7 +81,6 @@ class Play_game:
             current_weight += min_permutation[i + 1].curr_edge.weight
             the_path.extend(temp_path)
             the_weight_of_path += current_weight
-
         arena.agents_lst[min_agent].agents_path = the_path
         arena.agents_lst[min_agent].pokemons_to_eat.append(pokemon)
         for agent in agents_list:
@@ -97,12 +97,10 @@ class Play_game:
         except Exception:
             return
 
-    def thread_function(self, client_of_thread, time_to_sleep, time_of_calculate):
+    def thread_function(self, client_of_thread, time_to_sleep):
         try:
-            time_now = tm.time()
-            tm.sleep(time_to_sleep-(time_of_calculate-time_now))
+            tm.sleep(time_to_sleep*0.9)
             client_of_thread.move()
-            print("was moved")
             sys.exit()
         except Exception:
             return
@@ -128,7 +126,10 @@ class Play_game:
         pygame.font.init()
         client.start()
         while client.is_running() == 'true':
-            pokemons_to_allocate = arena.update_pokemons_lst(client.get_pokemons(), False)
+            for agent in arena.agents_lst:
+                agent.agents_path.clear()
+                agent.pokemons_to_eat.clear()
+            arena.update_pokemons_lst(client.get_pokemons(), False)
             arena.update_agent_lst(client.get_agents(), False)
             # here need to put update game info
             y = threading.Thread(target=self.thread_paint, args=(arena.graph_algo, arena.agents_lst,
@@ -140,7 +141,7 @@ class Play_game:
                     pygame.quit()
                     exit(0)
             # find which agent goes to which pokemon
-            for pokemon in pokemons_to_allocate:
+            for pokemon in arena.pokemons_lst:
                 # need to allocate only for a pokemon which is new
                 agents_id_allocated = self.AllocateAgent(arena.agents_lst, pokemon, arena)
             for agent in arena.agents_lst:
@@ -167,28 +168,28 @@ class Play_game:
                                                                         pokemon_close_enough.curr_edge.dst_location)
                         dist_from_src_to_pokemon = self.dist_between_points(pokemon_close_enough.curr_edge.src_location,
                                                                             pokemon_close_enough.pos)
-                        time_now = tm.time()
+
                         weight_of_edge = pokemon_close_enough.curr_edge.weight
                         speed_of_agent = agent.speed
                         the_part_of_the_edge = dist_from_src_to_pokemon / dist_from_src_to_dst
                         the_part_weight = weight_of_edge * the_part_of_the_edge
                         time_to_run_on_edge = the_part_weight / speed_of_agent
-                        x = threading.Thread(target=self.thread_function, args=(client, time_to_run_on_edge, time_now))
+                        x = threading.Thread(target=self.thread_function, args=(client, time_to_run_on_edge))
                         threads.append(x)
                         x.start()
+                        # x.join()
                         self.moves += 1
                         arena.pokemons_lst.remove(pokemon_close_enough)  # note that if it work
                         agent.pokemons_to_eat.remove(pokemon_close_enough)
                 curr_time = tm.time()
                 dif_in_times = (curr_time - start_time)
                 if (dif_in_times / self.moves) < 10:
-                    if int(10 - (dif_in_times / self.moves)) - 1 > 1:
+                    if int(10 - (dif_in_times / self.moves)) - 1 > 0:
                         clock.tick(int(10 - (dif_in_times / self.moves) - 1))
                         client.move()
                     else:
                         clock.tick(int(10 - (dif_in_times / self.moves)))
                         client.move()
-                        self.moves += 1
                     self.moves += 1
                 for index, thread in enumerate(threads):
                     if not thread.is_alive():
