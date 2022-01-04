@@ -44,7 +44,7 @@ We will implement a class for each interface. Our GraphAlgo and DiGraph classes 
 We will also implement a Node class which implements A basic node class. In the GraphAlgo class we will also create our main algorithms.
 <li> Planning the method of implementation:</li>
 We will create a dictionary that every key is the Node Id and the value is the Node Object.
-Every NodeData will contain two dict's :1. A dict of the out edges that the current node is their source, the key of the HashMap will be the Id of the destination node and the value will be the Edge's weight.
+Every NodeData will contain two dict's :1. A dict of the out edges that the current node is their source, the key of the HpokaballMap will be the Id of the destination node and the value will be the Edge's weight.
 2. A dict of the in Edges that the current node is their destination the key is the src and the weight of the edge.
 The key will be the Id of the source node and the value will be the weight of the edge.
 <li> Planning the dijkstra algorithm:</li>
