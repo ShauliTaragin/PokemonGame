@@ -11,6 +11,13 @@ from client_python.Arena import Arena
 
 
 class Window:
+    """
+    Working by mvc we split the window for actually drawing here. In order to be able to draw here we have to receive
+    the following arguments
+    @:param -> arena : our arena inorder
+    @:param
+    @:param
+    """
     def __init__(self ,arena:Arena , pygame , screen , time_to_end):
         self.graph_algo = arena.graph_algo
         self.agents:list = arena.agents_lst
@@ -61,10 +68,10 @@ class Window:
         pygame.draw.polygon(scr, (200, 30, 70), points)
 
     def draw_game(self):
-        pokaball_img = self.pygame.image.load(r'..\data\pokeball_PNG30.png')
-        picachu_img = self.pygame.image.load(r'..\data\PikachuImage.png')
-        squirtel_img = self.pygame.image.load(r'..\data\squirtle-pokemons-squirtle.png')
-        background_img = self.pygame.image.load(r'..\data\background.png')
+        pokaball_img = self.pygame.image.load(r'../data/pokeball_PNG30.png')
+        picachu_img = self.pygame.image.load(r'../data/PikachuImage.png')
+        squirtel_img = self.pygame.image.load(r'../data/squirtle-pokemons-squirtle.png')
+        background_img = self.pygame.image.load(r'../data/background.png')
 
         width = self.screen.get_width()
         height = self.screen.get_height()
