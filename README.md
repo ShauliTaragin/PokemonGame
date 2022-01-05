@@ -125,7 +125,7 @@ Either way the gui implementation is called from the interface function plot_gra
 ***We will lay out our Pokemon Game algorithms and explain how we implemented them:***
 
 
-###Arena class
+### Arena class
 
 **The Arena class holds:**
 * *pokemons_lst -*  The list that contains the pokemons.
