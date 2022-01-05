@@ -1,0 +1,136 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+client o-- Play_game
+Play_game o-- Arena
+Play_game o-- Window
+Arena o-- Agent
+Arena o-- Pokemon
+Arena o-- GraphAlgo
+Pokemon o-- Edge
+
+GeoLocation o-- Node
+GeoLocation o-- Edge
+GeoLocation o-- Agent
+DiGraph o-- Node
+DiGraph o-- Edge
+GraphAlgo o-- MinHeapDijkstra
+GraphAlgo o-- DiGraph
+MinHeapDijkstra o-- minHeap
+TestDiGraph o-- DiGraph
+
+
+
+Abstract class  client{
+
+}
+class Play_game{
+calculate_time_of_path(arena: Arena, list_of_stops: list)
+get_all_permutations(pokemon_list)
+AllocateAgent(agents_list, pokemon: Pokemon, arena: Arena)
+dist_between_points(self, point1: GeoLocation, point2: GeoLocation)
+run_game(self)
+thread_function(self, client_of_thread, time_to_sleep)
+
+self.moves
+self.grade
+self.id
+self.scanerio_num
+}
+
+class Arena{
+
+
+self.pokemons_lst: [Pokemon] = []
+self.agents_lst: [Agent] = []
+self.graph_algo: GraphAlgo = GraphAlgo()
+self.info_dict = {}
+self.dijkstra_list = {}
+self.client = Client
+}
+class GraphAlgo {
+get_graph()
+load_from_json(self, file_name: str)
+save_to_json(self, file_name: str)
+shortest_path(self, id1: int, id2: int)
+TSP(self, node_lst: List[int])
+centerPoint(self)
+plot_graph(self)
+is_connected(self)
+reverse(self, graph: DiGraph)
+bfs(self, graph: DiGraph)
+find_path(self, nodes: List[Node], graph: DiGraph)
+graph:DiGraph
+}
+
+class DiGraph {
+v_size(self)
+e_size(self)
+get_all_v(self)
+all_in_edges_of_node(self, id1: int)
+all_out_edges_of_node(self, id1: int)
+get_mc(self)
+add_edge(self, id1: int, id2: int, weight: float)
+add_node(self, node_id: int, pos: tuple)
+remove_node(self, node_id: int)
+remove_edge(self, node_id1: int, node_id2: int)
+set_location(self)
+caclulate_minmax(self)
+nodes:dict
+_numOfEdges:int
+_mc:int
+}
+
+class MinHeapDijkstra{
+dijkstra_Getmin_distances(self, source_vertex: int, dest: int)
+decreaseKey(self, minHeap: MinHeap, newKey, vertex: int)
+graph: DiGraph
+max:int
+parents:lst
+heap_nodes:lst
+extracted:lst
+}
+
+class minHeap {
+insert(self, node: Node)
+heapfyUp(self, pos: int)
+extractMin(self)
+sinkDown(self, k: int)
+swap(self, a: int, b: int)
+isEmpty(self)
+heapSize(self)
+index_of_nodes1:lst
+node_holder1:lst
+heap_size:int
+}
+
+
+class TestDiGraph{
+test_v_size(self)
+test_e_size(self)
+test_get_all_v(self)
+test_all_in_edges_of_node(self)
+test_all_out_edges_of_node(self)
+test_get_mc(self)
+test_add_edge(self)
+test_add_node(self)
+test_remove_node(self)
+test_remove_edge(self)
+}
+
+class Node{
+__repr__(self)
+__str__(self)
+add_out_edge(self, weight: float, dest: int)
+add_in_edge(self, weight: float, src: int)
+key:int
+weight:float
+geolocation:tuple
+tag:int
+outEdges:dict
+inEdges:dict
+}
+
+
+@enduml

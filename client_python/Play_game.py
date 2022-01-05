@@ -219,7 +219,6 @@ class Play_game:
                         weight_of_edge = arena.graph_algo.graph.nodes[agent.src].outEdges[next_node].weight
                         speed_of_agent = agent.speed
                         the_time_of_path = weight_of_edge / speed_of_agent
-
                         y = threading.Thread(target=self.thread_function, args=(client, the_time_of_path))
                         threads_of_nodes.append(y)
                         y.start()

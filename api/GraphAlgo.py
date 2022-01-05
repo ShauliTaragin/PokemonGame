@@ -11,20 +11,18 @@ from typing import List
 
 # import HelperAlgo
 from api import MinHeapDijkstra
-from api.GraphAlgoInterface import GraphAlgoInterface
 from api.Node import Node
-from api.GraphInterface import GraphInterface
 from api.DiGraph import DiGraph
 from api.Edge import Edge
 
 
-class GraphAlgo(GraphAlgoInterface):
+class GraphAlgo():
     def __init__(self, graph: DiGraph = None):
         self.graph = graph
         self.g = None
         self.initiated = False
 
-    def get_graph(self) -> GraphInterface:
+    def get_graph(self) :
         return self.graph
 
     def load_from_json(self, file_name: str) -> bool:
