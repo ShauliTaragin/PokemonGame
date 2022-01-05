@@ -1,4 +1,4 @@
-![Screenshot](data/giphy.gif)
+![Alt Text](data/giphy.gif)
 
 # PokemonGame
 The Fifth Task in OOP course. Building A Pokémon game 
@@ -176,6 +176,7 @@ Then we iterate over the pokemons that were allocated to the agent we calculated
 pokemon and we will create another thread that sleeps the time it will take to arrive the pokemon and then it will call
 the move method from the client, in order to call the move close to the pokemon and successfully eat the pokemon.
 Then we again clear the pokemon list and get them from the client, and updated the agent data.
+
 ---------
 <!-- results -->
 
@@ -183,8 +184,7 @@ Then we again clear the pokemon list and get them from the client, and updated t
 
 #### For our enhanced explanation please visit our wiki page for this project.
 
-These are our best Results. 
-:
+These are our best Results.
 
 |Case|Grade|Moves|
 |---------|---------|---------|
@@ -193,17 +193,17 @@ These are our best Results.
 |2|55|207|
 |3|213|770|
 |4|63|253|
-|5|10 ms|160 ms|
-|6|10 ms|160 ms|
-|7|10 ms|160 ms|
-|8|10 ms|160 ms|
-|9|10 ms|160 ms|
-|10|10 ms|160 ms|
-|11|1513|424|
-|12|10 ms|160 ms|
-|13|10 ms|160 ms|
-|14|10 ms|160 ms|
-|15|10 ms|160 ms|
+|5|189|662|
+|6|28|79|
+|7|136|337|
+|8|33|58|
+|9|167|451|
+|10|29|59|
+|11|424|1513|
+|12|25|40|
+|13|112|236|
+|14|59|173|
+|15|146|349|
 
 
 
