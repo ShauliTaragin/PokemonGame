@@ -94,7 +94,6 @@ def AllocateAgent(agents_list, pokemon: Pokemon, arena: Arena) -> int:  # return
     if len(min_permutation) == 2:
         the_path.append(min_permutation[1].curr_edge.dst)
     for i in range(1, len(min_permutation) - 1):
-        # if min_permutation[i].curr_edge.src != min_permutation[i + 1].curr_edge.src:
         current_weight, temp_path = arena.graph_algo.shortest_path(min_permutation[i].curr_edge.dst
                                                                    , min_permutation[i + 1].curr_edge.src)
         temp_path.append(min_permutation[i + 1].curr_edge.dst)
@@ -179,21 +178,10 @@ class Play_game:
                     agent.pokemons_to_eat.clear()
                 arena.update_pokemons_lst(client.get_pokemons(), False)
                 arena.update_agent_lst(client.get_agents(), False)
-                # print(arena.info_dict)
                 # calling our gui
                 time_to_end = client.time_to_end()
                 Window(arena, pygame, screen, client.time_to_end())
-                # here need to put update game info
-                # y = threading.Thread(target=self.thread_paint, args=(arena.graph_algo, arena.agents_lst,
-                #                                                      arena.pokemons_lst, pygame, screen, clock))
-                # y.start()
-                # y.join()
-                # for events in pygame.event.get():
-                #     if events.type == pygame.QUIT:
-                #         pygame.quit()
-                #         exit(0)
                 # find which agent goes to which pokemon
-
                 for pokemon in arena.pokemons_lst:  # allocating our pokemons
                     # need to allocate only for a pokemon which is new
                     agents_id_allocated = AllocateAgent(arena.agents_lst, pokemon, arena)
@@ -222,7 +210,6 @@ class Play_game:
                             self.moves += 1
                             ttl = client.time_to_end()
                             print(ttl, client.get_info())
-
                         # updating our agents list so our main algorithm will always be updated
                         arena.update_agent_lst(client.get_agents(), False)
                     counter = 0
@@ -266,8 +253,6 @@ class Play_game:
                                 x = threading.Thread(target=self.thread_function, args=(client, time_to_run_on_edge))
                                 threads.append(x)
                                 x.start()
-
-                            # x.join()
                             self.moves += 1
                             arena.pokemons_lst.remove(pokemon_close_enough)  # note that if it work
                             agent.pokemons_to_eat.remove(pokemon_close_enough)
@@ -276,26 +261,12 @@ class Play_game:
                     if not thread.is_alive():
                         threads_of_nodes.remove(thread)
                     else:
-                        # thread.start()
                         thread.join()
                 for index, thread in enumerate(threads):
                     if not thread.is_alive():
                         threads.remove(thread)
                     else:
                         thread.join()
-                curr_time = tm.time()
-                dif_in_times = (curr_time - start_time)
-                # we want to make sure we dont excess the amount of permitted moves therefore we will only move if our
-                # pace of move calling permits it
-                # if (dif_in_times / self.moves) < 10:
-                #     if int(10 - (dif_in_times / self.moves)) - 1 > 0:
-                #         clock.tick(int(10 - (dif_in_times / self.moves) - 1))
-                #         client.move()
-                #     else:
-                #         clock.tick(int(10 - (dif_in_times / self.moves)))
-                #         client.move()
-                #     self.moves += 1
-
                 clock.tick(30)
             client.stop_connection()
             sys.exit()
@@ -309,5 +280,4 @@ class Play_game:
 
 if __name__ == '__main__':
     pf = Play_game()
-    # print(pf)
     pf.run_game()

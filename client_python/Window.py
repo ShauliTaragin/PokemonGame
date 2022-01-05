@@ -38,7 +38,7 @@ class Window:
         dx = x2 - x1
         dy = y2 - y1
         D = mh.sqrt(dx * dx + dy * dy)
-        xm = D - 3.5
+        xm = D - 14
         xn = xm
         ym = h
         yn = (0 - h)
