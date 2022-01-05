@@ -188,11 +188,11 @@ These are our best Results.
 
 |Case|Grade|Moves|
 |---------|---------|---------|
-|0|10 ms|160 ms|
-|1|10 ms|160 ms|
-|2|10 ms|160 ms|
-|3|10 ms|160 ms|
-|4|10 ms|160 ms|
+|0|44|125|
+|1|167|455|
+|2|55|207|
+|3|213|770|
+|4|63|253|
 |5|10 ms|160 ms|
 |6|10 ms|160 ms|
 |7|10 ms|160 ms|
@@ -212,6 +212,7 @@ These are our best Results.
 ## UML
 
 ![Screenshot](data/poke.png)
+
 | Our Unified Modeling Language representation |
 
 *Note*: We have subtracted all the graph and graph algo classes for which the implementation is identical to Ex3.

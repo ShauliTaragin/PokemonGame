@@ -300,6 +300,7 @@ class Play_game:
             client.stop_connection()
             sys.exit()
         except Exception:
+            #exiting gracefully
             pygame.quit()
             exit(0)
             client.stop_connection()
