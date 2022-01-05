@@ -83,7 +83,7 @@ The arena will get the information from the Play_game and it will update it.
 
 ![Alt Text](data/pokemon_gif.gif)
 
-| *Our gui representation of the pokemon game case 11* |
+| *A short video clip of Our gui representation of the pokemon game case 11* |
 
 ## GUI
 
@@ -129,59 +129,63 @@ Either way the gui implementation is called from the interface function plot_gra
 
 **The Arena class holds:**
 * *pokemons_lst -*  The list that contains the pokemons.
-* *agents_lst -* The list of agents.
+* *agents_lst -* The list that contains the agents.
 * *graph_algo -* The graph algo class.
-* *info_dict -* The dict that has the info of the game.
-* *dijkstra_list -* Dictionary that every key is the node id and the value is list with the shortest weight of the
-path between this node to every other node. 
+* *info_dict -* The dictionary that holds the information of the game.
+* *dijkstra_list -* A Dictionary that holds all the nodes in the graph as keys and the value for each node is a list with the shortest weight of the
+path between this node to every other node in the graph. 
 * *client -* the client of the game.
 <br>
 **The Arena class functions:**
-1. *init -* Initialize the arena class from the info we got from the client.
-2. *update_pokemons_lst -* Update the arena.pokemon_lst with the given json from the client.
-3. *update_agent_lst -* Update the agents values from the client.get_agents
-4. *place_agents_at_beginning -* Create the agents and place them at the nodes that has the most pokemons near them.
-5. *update_game_info -* Update the game info from the client.
+1. *init -* Initializes the arena class from the info we got from the client.
+2. *update_pokemons_lst -* Updates the arena.pokemon_lst with the given json from the client.
+3. *update_agent_lst -* Updates the agents values every iteration from the client.get_agents
+4. *place_agents_at_beginning -* Creates the agents and places them at the nodes that are closest to the pokemons.
+5. *update_game_info -* Updates the game info from the client.
 
 <br>
 
 ### Play_game class
 
 
-*The Play_game holds:*
-* *moves -* counts the moves the client made.
+*The Play_game which is our main class holds as class memebers:*
+* *moves -* counts the moves made.
 * *grade -* sums the grade of the game.
 
 *The Play_game class functions:*
-1. *AllocateAgent -* allocate agent to given pokemon.
-2. *get_all_permutations -* give list and return all the permutations of the list.
+1. *AllocateAgent -* allocates an agent to a given pokemon.
+2. *get_all_permutations -* receives a list and returns all the permutations of that list.
 3. *calculate_time_of_path -* using the dijkstra dictionary to calculate the weight of the path.
-4. *dist_between_points -* given two points it return the dist between the two points.
-5. *thread_function -* the thread that sleeps and activate the move method from the client.
+4. *dist_between_points -* receives two points and returns the distance between two points.
+5. *thread_function -* The thread that sleeps and activates the move method from the client with a certain sleep time.
 It is responsible for the movement of the nodes, and eating the pokemons.
 6. *run_game -* runs the game.
 
 ## THE MAIN ALGORITHM
 
-First we wanted to initiate the client and connect it to the server, after connecting the client we place the agents
-in the graph near the most visited edges.<br>
-After starting the client we update at every iteration of the game the pokemons that in the graph and waiting
-to be eaten, then we updated the agents values such as position, value, speed etc.
-Then we sent the pokemons in the graph to the allocate_agent function and allocate each pokemon to 
-certain agent.<br>
+Firstly we would like to initiate the client and connect it to the server. After connecting the client we place the agents
+in the graph near the edges with the most pokemons on them.
+
+After starting the client , upon every iteration we update the list of pokemons that are still in the graph and are waiting
+to be eaten. After that we update the agents values such as position, value, speed etc.
+Then we sent the pokemons in the graph to the our main algorithm. That is to the allocate_agent function thus allocating each pokemon to 
+a certain agent.
+
 Then we permute all the pokemons in the path and calculate the weight of the permutation by using the 
 dijkstra dictionary that we created in the arena class at the beginning of the game.
-After finding the permutation with the min weight we used the shortest path function from the GraphAlgo class and found
-the path between the pokemons in the best permutation.<br>
-After allocating every pokemon, we iterate over the agents and choose the next edge for every agent by the path we found.
-<br>
-Then we calculate the time when the agent will arrive to his destination, and then created thread that is used to wait
-the time that it will take the agent to arrive to the next node and after finish waiting the thread will call the client.
-move, in order to correctly call it at the time the agent arrives.<br>
-Then we iterate over the pokemons that were allocated to the agent we calculated the time the agent will arrive the
-pokemon and we will create another thread that sleeps the time it will take to arrive the pokemon and then it will call
-the move method from the client, in order to call the move close to the pokemon and successfully eat the pokemon.
-Then we again clear the pokemon list and get them from the client, and updated the agent data.
+After finding the permutation with the minimal weight we use the shortest path function from the GraphAlgo class inorder to find
+the path the agent should take between the pokemons according to the most efficient permutation.
+
+Once we allocated every pokemon, we iterate over the agents and choose the next edge for every agent according to the ultimate path we found.
+
+Now, inside that iteration we can calculate the time when the agent will arrive to his destination, and create a thread that is used to wait
+the amount of time that it will take the agent to arrive to the next node.Once the thread is done waiting the thread will call the clients
+move function. In order to correctly call it at the exact time the agent arrives.
+
+At last we iterate over the pokemons that were allocated to the agent. We calculate the time the agent will arrive at that
+pokemon and we will create another thread that sleeps the amount of time it will take the agent to arrive catch the pokemon. When the thread finishes its sleep
+it will call the move method from the client. This is In order to call the move only when we are close to the pokemon and successfully eat it.
+Then we again clear the pokemon list and get the updated list from the client, we update our agent data and continue to the next iteration.
 
 ---------
 <!-- results -->
