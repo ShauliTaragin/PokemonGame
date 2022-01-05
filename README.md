@@ -81,7 +81,7 @@ The arena will get the information from the Play_game and it will update it.
 
 ---------
 
-![Screenshot](data/pic_pokemon_3.png)
+![Alt Text](data/pokemon_gif.gif)
 
 | *Our gui representation of the pokemon game case 11* |
 
@@ -115,7 +115,7 @@ The user can either create a graph by adding nodes and edges e.g. check0 or load
 Either way the gui implementation is called from the interface function plot_graph
 
 
-![Screenshot](data/pic_pokemon_11.png)
+![Screenshot](data/pic_pokemon_3.png)
 
 | *Our gui representation of the pokemon game case 3* |
 
