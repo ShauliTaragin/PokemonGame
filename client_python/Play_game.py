@@ -107,7 +107,8 @@ def AllocateAgent(agents_list, pokemon: Pokemon, arena: Arena) -> int:  # return
         the_path.extend(temp_path)
         the_weight_of_path += current_weight
     arena.agents_lst[min_agent].agents_path = the_path
-    arena.agents_lst[min_agent].pokemons_to_eat.append(pokemon)
+    min_permutation.pop(0)
+    arena.agents_lst[min_agent].pokemons_to_eat = min_permutation
     for agent in agents_list:
         agent.permutaion.clear()
     return min_agent
@@ -143,7 +144,7 @@ class Play_game:
 
     def thread_function(self, client_of_thread, time_to_sleep):
         try:
-            tm.sleep(time_to_sleep * 0.9)
+            tm.sleep(time_to_sleep)
             client_of_thread.move()
             sys.exit()
         except Exception:
@@ -153,6 +154,7 @@ class Play_game:
     def run_game(self):
         # Simply initializing all our arena with the initial information from the server
         threads = []
+        threads_of_nodes = []
         HOST = '127.0.0.1'
         PORT = 6666
         WIDTH, HEIGHT = 1080, 720
@@ -213,50 +215,91 @@ class Play_game:
                         # we simply choose the next edge to be the next node in our agents path
                         client.choose_next_edge(
                             '{"agent_id":' + str(agent.id) + ', "next_node_id":' + str(next_node) + '}')
+                        weight_of_edge = arena.graph_algo.graph.nodes[agent.src].outEdges[next_node].weight
+                        speed_of_agent = agent.speed
+                        the_time_of_path = weight_of_edge / speed_of_agent
+                        y = threading.Thread(target=self.thread_function, args=(client, the_time_of_path))
+                        threads_of_nodes.append(y)
+                        y.start()
+                        self.moves += 1
                         ttl = client.time_to_end()
                         print(ttl, client.get_info())
-                    #updating our agents list so our main algorithm will always be updated
+
+                    # updating our agents list so our main algorithm will always be updated
                     arena.update_agent_lst(client.get_agents(), False)
+                counter = 0
+                pos_of_pokemon_on_same_edge = 0
+                the_part_weight = 0
+                weight_of_new_edge = 0
+                time_to_run_on_edge = 0
                 for pokemon_close_enough in agent.pokemons_to_eat:
                     if agent.src == pokemon_close_enough.curr_edge.src \
                             and agent.dest == pokemon_close_enough.curr_edge.dst:  # if close enough to pokemon
-                        dist_from_src_to_dst = self.dist_between_points(pokemon_close_enough.curr_edge.src_location,
-                                                                        pokemon_close_enough.curr_edge.dst_location)
-                        dist_from_src_to_pokemon = self.dist_between_points(pokemon_close_enough.curr_edge.src_location,
-                                                                            pokemon_close_enough.pos)
-                    # We check weather any agent is on the same node as the src of any pokemon and going to the same dest
-                    # if so we calculate the time it will take for that agent to catch that pokemon and send that agent to the
-                    # thread function above making sure he will catch the pokemon on time
-                        weight_of_edge = pokemon_close_enough.curr_edge.weight
-                        speed_of_agent = agent.speed
-                        the_part_of_the_edge = dist_from_src_to_pokemon / dist_from_src_to_dst
-                        the_part_weight = weight_of_edge * the_part_of_the_edge
-                        time_to_run_on_edge = the_part_weight / speed_of_agent
-                        x = threading.Thread(target=self.thread_function, args=(client, time_to_run_on_edge))
-                        threads.append(x)
-                        x.start()
+                        if counter == 0:
+                            dist_from_src_to_dst = self.dist_between_points(agent.pos,
+                                                                            pokemon_close_enough.curr_edge.dst_location)
+                            dist_from_src_to_pokemon = self.dist_between_points(agent.pos,
+                                                                                pokemon_close_enough.pos)
+                            # We check weather any agent is on the same node as the src of any pokemon and going to the same dest
+                            # if so we calculate the time it will take for that agent to catch that pokemon and send that agent to the
+                            # thread function above making sure he will catch the pokemon on time
+                            weight_of_edge = pokemon_close_enough.curr_edge.weight
+                            speed_of_agent = agent.speed
+                            pos_of_pokemon_on_same_edge = pokemon_close_enough.pos
+                            the_part_of_the_edge = dist_from_src_to_pokemon / dist_from_src_to_dst
+                            the_part_weight = weight_of_edge * the_part_of_the_edge
+                            weight_of_new_edge = pokemon_close_enough.curr_edge.weight - the_part_weight
+                            time_to_run_on_edge = the_part_weight / speed_of_agent
+                            x = threading.Thread(target=self.thread_function, args=(client, time_to_run_on_edge))
+                            threads.append(x)
+                            x.start()
+                            counter += 1
+                        else:
+                            dist_from_poke_to_dest = self.dist_between_points(pos_of_pokemon_on_same_edge,
+                                                                            pokemon_close_enough.curr_edge.dst_location)
+                            dest_from_poke_to_poke = self.dist_between_points(pos_of_pokemon_on_same_edge,
+                                                                              pokemon_close_enough.pos)
+                            the_part_of_the_edge = dest_from_poke_to_poke / dist_from_poke_to_dest
+
+                            the_part_weight = weight_of_new_edge * the_part_of_the_edge
+                            weight_of_new_edge = weight_of_new_edge - the_part_weight
+                            time_to_run_on_edge = the_part_weight / agent.speed
+                            pos_of_pokemon_on_same_edge = pokemon_close_enough.pos
+                            x = threading.Thread(target=self.thread_function, args=(client, time_to_run_on_edge*0.99))
+                            threads.append(x)
+                            x.start()
+
+
                         # x.join()
                         self.moves += 1
                         arena.pokemons_lst.remove(pokemon_close_enough)  # note that if it work
                         agent.pokemons_to_eat.remove(pokemon_close_enough)
-                curr_time = tm.time()
-                dif_in_times = (curr_time - start_time)
-                # we want to make sure we dont excess the amount of permitted moves therefore we will only move if our
-                # pace of move calling permits it
-                if (dif_in_times / self.moves) < 10:
-                    if int(10 - (dif_in_times / self.moves)) - 1 > 0:
-                        clock.tick(int(10 - (dif_in_times / self.moves) - 1))
-                        client.move()
-                    else:
-                        clock.tick(int(10 - (dif_in_times / self.moves)))
-                        client.move()
-                    self.moves += 1
-                for index, thread in enumerate(threads):
-                    if not thread.is_alive():
-                        threads.remove(thread)
-                    else:
-                        thread.join()
 
+            for index, thread in enumerate(threads_of_nodes):
+                if not thread.is_alive():
+                    threads_of_nodes.remove(thread)
+                else:
+                    # thread.start()
+                    thread.join()
+            for index, thread in enumerate(threads):
+                if not thread.is_alive():
+                    threads.remove(thread)
+                else:
+                    thread.join()
+            curr_time = tm.time()
+            dif_in_times = (curr_time - start_time)
+            # we want to make sure we dont excess the amount of permitted moves therefore we will only move if our
+            # pace of move calling permits it
+            # if (dif_in_times / self.moves) < 10:
+            #     if int(10 - (dif_in_times / self.moves)) - 1 > 0:
+            #         clock.tick(int(10 - (dif_in_times / self.moves) - 1))
+            #         client.move()
+            #     else:
+            #         clock.tick(int(10 - (dif_in_times / self.moves)))
+            #         client.move()
+            #     self.moves += 1
+
+            clock.tick(30)
         pygame.quit()
 
 
