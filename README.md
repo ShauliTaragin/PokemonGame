@@ -42,19 +42,24 @@ We also created an enhanced Graphical User Interface to visualize any given game
 ## Plan and design of The Project
 
 Upon planning are project we would like to focus on 3 fields for which we wish to plan elaborately before we begin implementing code.
+
+The first and most important matter for us in this project is to communicate with the server only when we know the agent is on a pokemon or a node , 
+and not just randomly moving. 
+
+All of our planning will go towards this goal . That is we shall meticulously plan our algorithms to work with multi threads correspondingly inorder to achieve ultimate results with minimum moves.
 <li> Planning the main classes:</li>
 Our GraphAlgo and DiGraph classes will hold the shortest path algorithm and supporting functions.
-We had our dijkstra algorithm class and the MinHeap class.
-We will also had a Node class which implements A basic node class.
-We implemented some classes to help our game to run better.
-We implemented Edge class, GeoLocation class, Agent class, and Pokemon class.
-We create Arena class that contain the other class and help us to reach every class from it.
-The class that controlled the game was the Play_game class that used the arena functions to run the game.
-The Window class is basically show the live changes occurrences in the game. 
+
+1. We will have our dijkstra algorithm class and the MinHeap class to implement the shortest path efficiently.
+2. We will also have a Node class which implements A basic node class.
+3. We shall implement Edge class, GeoLocation class, Agent class, and Pokemon class.
+4. We find the need to create an "Arena" class that will contain the other classes and help us hold all the information elegantly. This way we will have a "module" class which we can work with very comfortably
+5. There will be a class that will act as our "main class" and control the game. This class will communicate to all our project via the arena class.
+6. And of course for the sake of good order we will have a "Gui class" named window which will show the live changes occurring in the game.
 <br>
 
-**By the MVC design pattern principles the USER uses the Play_game class in order to control the modules and functions 
-inside the Arena class that is used by the Window to show the user the changes in the game itself**
+***By the MVC design pattern principles the USER uses the Play_game class. He uses that class in order to control the modules and functions 
+inside the Arena class. The class is also used by the Window to allow the user to kindly view the changes in the game itself***
 
 <li> Planning the method of implementation:</li>
 We will create a dictionary that every key is the Node Id and the value is the Node Object.
@@ -65,17 +70,18 @@ The key will be the Id of the source node and the value will be the edge object.
 We wanted to implement the dijkstra algorithm in the most elegant ,most efficient way possible. Obviously the dijkstra algorithm is needed for calculating the center, shortest path, and tsp methods.
 So we will achieve this by creating an instance of a MinHeapDijkstra. e.g Instead of implementing dijkstra with a priority queue we will apply the min heap data structure which we will create on the dijkstra algorithm.
 <li>Planning the Play_game class:</li>
-The play_game class holds the functions that our algorithm is using.
-It initialize the client and iterating until the game is over.
-It also painting the graph every iteration.
+The play_game class holds the functions that our algorithms are using.
+It shall initialize the client and iterate continually until the game is over.
+It also paints the graph , agents and pokemons every iteration.
 <li>Planning the Arena class:</li>
 The arena class will hold every object we have: edge, agent, graph, client, pokemon.
-It will help the play game by making it easier to get all the information it needs to run the game as clean as it can.
+It will help the play game by making it easier to get all the information it needs to run the game as elegantly as possible.
 The arena will get the information from the Play_game and it will update it.
+
 
 ---------
 
-![Screenshot](data/pic_pokemon_11.png)
+![Screenshot](data/pic_pokemon_3.png)
 
 | *Our gui representation of the pokemon game case 11* |
 
@@ -88,7 +94,7 @@ The arena will get the information from the Play_game and it will update it.
 
 
 *About our GUI* :
-
+* Firstly in is imported to state that the gui runs with a certain "tick" which is not so pleasent. But the reason for this is that we are planning our moves meticulously using multi threading.
 * In our display of the pokemon game the user must run the client from the terminal choosing which case to play. Then running the program through the play_game class
 
 The game is represented in the following manner :
@@ -109,7 +115,7 @@ The user can either create a graph by adding nodes and edges e.g. check0 or load
 Either way the gui implementation is called from the interface function plot_graph
 
 
-![Screenshot](data/pic_pokemon_3.png)
+![Screenshot](data/pic_pokemon_11.png)
 
 | *Our gui representation of the pokemon game case 3* |
 
