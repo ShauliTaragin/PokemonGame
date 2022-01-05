@@ -4,7 +4,8 @@
 The Fifth Task in OOP course. Building A Pokémon game 
 
 
-* ####Note: inorder to run our program the user must have the pygame library.
+* **Note: inorder to run our program the user must have the pygame library.**
+
 <!-- TABLE OF CONTENTS -->
 <details open="open">
   <summary>Content</summary>
