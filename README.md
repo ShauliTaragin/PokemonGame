@@ -9,7 +9,7 @@ The Fifth Task in OOP course. Building A Pokémon game
   <ol>
     <li><a href="#about-the-project">About The Project</a></li>
     <li><a href="#about-the-project">Plan and design of The Project</a></li>
-    <li><a href="#Gui">GUI with pygame and manual</a></li>
+    <li><a href="#Gui">GUI & "How To Run"</a></li>
     <li><a href="#the-algorithm">The Algorithm</a></li>
     <li><a href="#results">Results</a></li>
     <li><a href="#UML">Uml</a></li>
@@ -28,10 +28,10 @@ The Fifth Task in OOP course. Building A Pokémon game
 
 ***Authors : Shauli Taragin & Ido Bar***  
 
-In this project we implemented algorithms for developing a pokemon game on directed graph.
+In this project we implemented algorithms for developing a pokemon game on a directed weighted graph.
 
 
-We also created a Graphical User Interface to visualize any given game stage.
+We also created an enhanced Graphical User Interface to visualize any given game stage.
 
 
 ---------
@@ -124,7 +124,34 @@ We will lay out our graph Theory algorithms and explain how we implemented them:
 
 ---------
 <!-- results -->
+
 ## Results
+
+#### For our enhanced explanation please visit our wiki page for this project.
+
+These are our best Results. 
+:
+
+|Case|Grade|Moves|
+|---------|---------|---------|
+|0|10 ms|160 ms|
+|1|10 ms|160 ms|
+|2|10 ms|160 ms|
+|3|10 ms|160 ms|
+|4|10 ms|160 ms|
+|5|10 ms|160 ms|
+|6|10 ms|160 ms|
+|7|10 ms|160 ms|
+|8|10 ms|160 ms|
+|9|10 ms|160 ms|
+|10|10 ms|160 ms|
+|11|1513|424|
+|12|10 ms|160 ms|
+|13|10 ms|160 ms|
+|14|10 ms|160 ms|
+|15|10 ms|160 ms|
+
+
 
 ---------
 
@@ -138,15 +165,13 @@ We will lay out our graph Theory algorithms and explain how we implemented them:
 ## Languages and Tools
 
   <div align="center">
-<code><img height="40" width="40" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1200px-Python-logo-notext.svg.png"></code> 
-
- <code><img height="40" height="40" src="https://jupyter.org/assets/main-logo.svg"/></code>
+<code><img height="40" width="40" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1200px-Python-logo-notext.svg.png"></code>
 <code><img height="40" width="70" src="https://upload.wikimedia.org/wikipedia/commons/d/d5/UML_logo.svg"/></code>
  <code><img height="40" width="40" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/PyCharm_Icon.svg/1024px-PyCharm_Icon.svg.png"/></code>
 <code><img height="40" height="40" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/git/git.png"></code>
 <code><img height="40" height="40" src="https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/terminal/terminal.png"></code>
 <code><img height="40" height="40" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Pygame_logo.gif"></code>
-
+<code><img height="40" height="40" src="https://upload.wikimedia.org/wikipedia/en/4/46/Pokemon_Go.png"></code>
   </div>
 
 

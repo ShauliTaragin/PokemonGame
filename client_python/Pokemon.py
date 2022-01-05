@@ -12,3 +12,6 @@ class Pokemon:
         self.type = type
         self.pos = pos
         self.curr_edge = edge
+
+    def __repr__(self):
+        return "Pokemons src is :  {} , Pokemons dest is: {}".format(self.curr_edge.src, self.curr_edge.dst)

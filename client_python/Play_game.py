@@ -163,7 +163,7 @@ class Play_game:
         client.start_connection(HOST, PORT)
         arena = Arena(client.get_info())
         first_pokemons = arena.update_pokemons_lst(client.get_pokemons(), True)
-        print(client.get_pokemons())
+       # print(client.get_pokemons())
         agents_list = arena.place_agents_at_beginning(first_pokemons)
         for i in agents_list:
             client.add_agent(agents_list[i])
@@ -182,8 +182,9 @@ class Play_game:
                 agent.pokemons_to_eat.clear()
             arena.update_pokemons_lst(client.get_pokemons(), False)
             arena.update_agent_lst(client.get_agents(), False)
-            print(arena.info_dict)
+           # print(arena.info_dict)
             # calling our gui
+            time_to_end = client.time_to_end()
             Window(arena, pygame, screen, client.time_to_end())
             # here need to put update game info
             # y = threading.Thread(target=self.thread_paint, args=(arena.graph_algo, arena.agents_lst,
@@ -218,12 +219,13 @@ class Play_game:
                         weight_of_edge = arena.graph_algo.graph.nodes[agent.src].outEdges[next_node].weight
                         speed_of_agent = agent.speed
                         the_time_of_path = weight_of_edge / speed_of_agent
+
                         y = threading.Thread(target=self.thread_function, args=(client, the_time_of_path))
                         threads_of_nodes.append(y)
                         y.start()
                         self.moves += 1
                         ttl = client.time_to_end()
-                        print(ttl, client.get_info())
+                       # print(ttl, client.get_info())
 
                     # updating our agents list so our main algorithm will always be updated
                     arena.update_agent_lst(client.get_agents(), False)
@@ -235,6 +237,8 @@ class Play_game:
                 for pokemon_close_enough in agent.pokemons_to_eat:
                     if agent.src == pokemon_close_enough.curr_edge.src \
                             and agent.dest == pokemon_close_enough.curr_edge.dst:  # if close enough to pokemon
+                        print("Time to end is : {}   ,  Pokemons to eat list is {}".format(int(time_to_end)/1000 , agent.pokemons_to_eat))
+                        print("Agents src is : {}  . Agents dest is : {}".format(agent.src , agent.dest))
                         if counter == 0:
                             dist_from_src_to_dst = self.dist_between_points(agent.pos,
                                                                             pokemon_close_enough.curr_edge.dst_location)
@@ -265,10 +269,9 @@ class Play_game:
                             weight_of_new_edge = weight_of_new_edge - the_part_weight
                             time_to_run_on_edge = the_part_weight / agent.speed
                             pos_of_pokemon_on_same_edge = pokemon_close_enough.pos
-                            x = threading.Thread(target=self.thread_function, args=(client, time_to_run_on_edge*0.99))
+                            x = threading.Thread(target=self.thread_function, args=(client, time_to_run_on_edge))
                             threads.append(x)
                             x.start()
-
 
                         # x.join()
                         self.moves += 1
@@ -304,7 +307,6 @@ class Play_game:
 
 
 if __name__ == '__main__':
-    print("at main")
     pf = Play_game()
-    print(pf)
+   # print(pf)
     pf.run_game()
