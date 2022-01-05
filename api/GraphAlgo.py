@@ -16,7 +16,7 @@ from api.DiGraph import DiGraph
 from api.Edge import Edge
 
 
-class GraphAlgo():
+class GraphAlgo:
     def __init__(self, graph: DiGraph = None):
         self.graph = graph
         self.g = None

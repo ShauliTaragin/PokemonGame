@@ -40,20 +40,34 @@ We also created an enhanced Graphical User Interface to visualize any given game
 
 Upon planning are project we would like to focus on 3 fields for which we wish to plan elaborately before we begin implementing code.
 <li> Planning the main classes:</li>
-We will implement a class for each interface. Our GraphAlgo and DiGraph classes will hold all the functions it implements from the interface as well as other functions which we will elaborate on in the next paragraph.
-We will also implement a Node class which implements A basic node class. In the GraphAlgo class we will also create our main algorithms.
+Our GraphAlgo and DiGraph classes will hold the shortest path algorithm and supporting functions.
+We had our dijkstra algorithm class and the MinHeap class.
+We will also had a Node class which implements A basic node class.
+We implemented some classes to help our game to run better.
+We implemented Edge class, GeoLocation class, Agent class, and Pokemon class.
+We create Arena class that contain the other class and help us to reach every class from it.
+The class that controlled the game was the Play_game class that used the arena functions to run the game.
+The Window class is basically show the live changes occurrences in the game. 
+<br>
+
+**By the MVC design pattern principles the USER uses the Play_game class in order to control the modules and functions 
+inside the Arena class that is used by the Window to show the user the changes in the game itself**
+
 <li> Planning the method of implementation:</li>
 We will create a dictionary that every key is the Node Id and the value is the Node Object.
-Every NodeData will contain two dict's :1. A dict of the out edges that the current node is their source, the key of the HpokaballMap will be the Id of the destination node and the value will be the Edge's weight.
-2. A dict of the in Edges that the current node is their destination the key is the src and the weight of the edge.
-The key will be the Id of the source node and the value will be the weight of the edge.
+Every NodeData will contain two dicts :1. A dict of the out edges that the current node is their source, the key will be the Id of the destination node and the value will be the Edge object.
+2. A dict of the in Edges that the current node is their destination the key is the src and the value is weight of the edge.
+The key will be the Id of the source node and the value will be the edge object.
 <li> Planning the dijkstra algorithm:</li>
 We wanted to implement the dijkstra algorithm in the most elegant ,most efficient way possible. Obviously the dijkstra algorithm is needed for calculating the center, shortest path, and tsp methods.
-So we will achieve this by creating an instance of a MinHeapDijkstra. e.g Instead of implemnting dijkstra with a priority queue we will apply the min heap data structure which we will create on the dijkstra algorithm.
-<li> Laying out testing methods :</li>
-Beyond testing all the implemented methods from the interface We would like to check the next methods:1. Create graph by adding nodes and edges.
-2. Connect two nodes. 3. Delete node. 4. Delete edge from the graph. 5. Get the correct mode count.
-6. Get the correct size of edges and the correct size of nodes.
+So we will achieve this by creating an instance of a MinHeapDijkstra. e.g Instead of implementing dijkstra with a priority queue we will apply the min heap data structure which we will create on the dijkstra algorithm.
+<li> Play_game:</li>
+First we wanted to initiate the client and connect it to the server, after connecting the client we place the agents
+in the graph near the most visited edges.
+After starting the client we update at every iteration of the game the pokemons that in the graph and waiting to be eaten,
+then we updated the agents values such as position, value, speed etc.
+The we sent the 
+
 
 
 
