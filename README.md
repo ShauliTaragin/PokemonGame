@@ -1,3 +1,5 @@
+![Screenshot](data/giphy.gif)
+
 # PokemonGame
 The Fifth Task in OOP course. Building A Pokémon game 
 
@@ -61,81 +63,118 @@ The key will be the Id of the source node and the value will be the edge object.
 <li> Planning the dijkstra algorithm:</li>
 We wanted to implement the dijkstra algorithm in the most elegant ,most efficient way possible. Obviously the dijkstra algorithm is needed for calculating the center, shortest path, and tsp methods.
 So we will achieve this by creating an instance of a MinHeapDijkstra. e.g Instead of implementing dijkstra with a priority queue we will apply the min heap data structure which we will create on the dijkstra algorithm.
-<li> Play_game:</li>
-First we wanted to initiate the client and connect it to the server, after connecting the client we place the agents
-in the graph near the most visited edges.
-After starting the client we update at every iteration of the game the pokemons that in the graph and waiting to be eaten,
-then we updated the agents values such as position, value, speed etc.
-The we sent the 
-
-
-
-
-
-
-
-
-
-
+<li>Planning the Play_game class:</li>
+The play_game class holds the functions that our algorithm is using.
+It initialize the client and iterating until the game is over.
+It also painting the graph every iteration.
+<li>Planning the Arena class:</li>
+The arena class will hold every object we have: edge, agent, graph, client, pokemon.
+It will help the play game by making it easier to get all the information it needs to run the game as clean as it can.
+The arena will get the information from the Play_game and it will update it.
 
 ---------
 
+![Screenshot](data/pic_pokemon_11.png)
+
+| *Our gui representation of the pokemon game case 11* |
+
 ## GUI
-#### We will explain about our gui as well as give a short and easy manual of how the user can use it easily.
 
-![Screenshot](images/graph_A.png)
+### Please visit our wiki page for A short video and more
 
-| *Our gui representation of the graph A5.json* |
+##### We will explain about our gui as well as give a short and easy manual of how the user can use it easily
 
 
-* About our GUI :
-In our display of the graph the user must create a graph(either load or create) for the GraphAlgo method, and call the plot_graph function.
 
-The graph is represented in the following manner : 
+*About our GUI* :
 
-Nodes are represented by black circles. Each node's key is written above it in blue.
+* In our display of the pokemon game the user must run the client from the terminal choosing which case to play. Then running the program through the play_game class
 
-Edges are represented by red lines with an arrow at the end showing the direction of the edge.
+The game is represented in the following manner :
+* The agents are marked as pokaballs e.g they catch pokemons.
+* Pokemons of type positive are marked as Picachu (the yellow pokemon).
+* Pokemons of type negative are marked as squirtl (the blue pokemon).
+* The time remaining , our current grade and moves are written on the top of the screen clearly in black.
+* *If the user wishes to exit the game he has a yellow quit button on the top right.*
 
-Inorder to run a gui performance for a graph of you're choice, the user must work from the main class.
+* Nodes are represented by purple circles. Each node's key is written above it in white.
+
+* Edges are represented by black lines with a red arrow at the end showing the direction of the edge.
+
+* Inorder to run a gui performance for a game of their choice, the user must work from the play_game class.
 
 The user can either create a graph by adding nodes and edges e.g. check0 or load a graph of their choice which is located in the data package.
 
 Either way the gui implementation is called from the interface function plot_graph
 
-![Screenshot](images/graph_check.png)
-| *Our gui representation of check3 graph* |
 
-#### Note : This graph will change everytime we call it. Since there was no geolocatoin inserted for the nodes we randomly inserted proper locations for each node. More information on how we did that can be found in our DiGraph class 
+![Screenshot](data/pic_pokemon_3.png)
+
+| *Our gui representation of the pokemon game case 3* |
 
 ---------
 
 ## The Algorithm
-***The GraphAlgoInterface interface is implemented in GraphAlgo class:***
-***The GraphAlgo object contains a class member of A graph of type DiGraph inorder to activate the algorithms on.***
-
-We will lay out our graph Theory algorithms and explain how we implemented them:
-
-1. **init**- Initializes the graph from a json file .
-2. **load_from_json**- Load from a json file a graph to work our algorithms on .
-3. **save_to_json**- Saves the graph to a json file.
-6. **shortestPath**- Calculates the shortest path distance between 2 given nodes.
-   1. We implement this algorithm as well as the shortestpath and tsp algorithm in the following manner.
-   2. In order to find the shortest path between two nodes we run the dijkstra algorithm using a data structure of Min Heap.Both these methods are implemnted in the DijkstraUsingMinHeap class
-   3. Then fitting the algorithm to our data structures that we are using to represent the graph.
-   4.    We hold with lists the path we took to reach the shortest distance
-   2. We iterate over our lists and hold in a list the path the algorithm traveled.
-   5. Finally, returning a tuple of a pair of the weight of the shortest path and the list of the path we took.
-8. **Center** - Finds the shortest path (at what edges should we use the path) between 2 given nodes in the graph.   
-9. **TSP**- Computes a relatively short path which visit each node in the cities List.
-   1. We run the same methods as 5. With additions that we run each of the cities as a src and find in a greedy way the shortest path to travel through all the cities
-   2. In this solution we also hold with arrays the path we took to reach the shortest distance.
-   3. We iterate over our arrays and return in a list the path the algorithm traveled.
+***We will lay out our Pokemon Game algorithms and explain how we implemented them:***
 
 
+###Arena class
+
+**The Arena class holds:**
+* *pokemons_lst -*  The list that contains the pokemons.
+* *agents_lst -* The list of agents.
+* *graph_algo -* The graph algo class.
+* *info_dict -* The dict that has the info of the game.
+* *dijkstra_list -* Dictionary that every key is the node id and the value is list with the shortest weight of the
+path between this node to every other node. 
+* *client -* the client of the game.
+<br>
+**The Arena class functions:**
+1. *init -* Initialize the arena class from the info we got from the client.
+2. *update_pokemons_lst -* Update the arena.pokemon_lst with the given json from the client.
+3. *update_agent_lst -* Update the agents values from the client.get_agents
+4. *place_agents_at_beginning -* Create the agents and place them at the nodes that has the most pokemons near them.
+5. *update_game_info -* Update the game info from the client.
+
+<br>
+
+### Play_game class
 
 
+*The Play_game holds:*
+* *moves -* counts the moves the client made.
+* *grade -* sums the grade of the game.
 
+*The Play_game class functions:*
+1. *AllocateAgent -* allocate agent to given pokemon.
+2. *get_all_permutations -* give list and return all the permutations of the list.
+3. *calculate_time_of_path -* using the dijkstra dictionary to calculate the weight of the path.
+4. *dist_between_points -* given two points it return the dist between the two points.
+5. *thread_function -* the thread that sleeps and activate the move method from the client.
+It is responsible for the movement of the nodes, and eating the pokemons.
+6. *run_game -* runs the game.
+
+## THE MAIN ALGORITHM
+
+First we wanted to initiate the client and connect it to the server, after connecting the client we place the agents
+in the graph near the most visited edges.<br>
+After starting the client we update at every iteration of the game the pokemons that in the graph and waiting
+to be eaten, then we updated the agents values such as position, value, speed etc.
+Then we sent the pokemons in the graph to the allocate_agent function and allocate each pokemon to 
+certain agent.<br>
+Then we permute all the pokemons in the path and calculate the weight of the permutation by using the 
+dijkstra dictionary that we created in the arena class at the beginning of the game.
+After finding the permutation with the min weight we used the shortest path function from the GraphAlgo class and found
+the path between the pokemons in the best permutation.<br>
+After allocating every pokemon, we iterate over the agents and choose the next edge for every agent by the path we found.
+<br>
+Then we calculate the time when the agent will arrive to his destination, and then created thread that is used to wait
+the time that it will take the agent to arrive to the next node and after finish waiting the thread will call the client.
+move, in order to correctly call it at the time the agent arrives.<br>
+Then we iterate over the pokemons that were allocated to the agent we calculated the time the agent will arrive the
+pokemon and we will create another thread that sleeps the time it will take to arrive the pokemon and then it will call
+the move method from the client, in order to call the move close to the pokemon and successfully eat the pokemon.
+Then we again clear the pokemon list and get them from the client, and updated the agent data.
 ---------
 <!-- results -->
 
@@ -171,8 +210,12 @@ These are our best Results.
 
 ## UML
 
-![Screenshot](images/z.png)
-| *Our Unified Modeling Language representation* |
+![Screenshot](data/poke.png)
+| Our Unified Modeling Language representation |
+
+*Note*: We have subtracted all the graph and graph algo classes for which the implementation is identical to Ex3.
+You may find that full uml [Here](https://github.com/ShauliTaragin/OOP_Ex3#uml)
+
 ---------
 
 

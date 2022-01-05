@@ -297,8 +297,11 @@ class Play_game:
                 #     self.moves += 1
 
                 clock.tick(30)
+            client.stop_connection()
+            sys.exit()
         except Exception:
             pygame.quit()
+            exit(0)
             client.stop_connection()
             sys.exit()
 

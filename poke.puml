@@ -9,6 +9,7 @@ Arena o-- Agent
 Arena o-- Pokemon
 Arena o-- GraphAlgo
 Pokemon o-- Edge
+Window o-- client
 
 GeoLocation o-- Node
 GeoLocation o-- Edge
@@ -18,12 +19,23 @@ DiGraph o-- Edge
 GraphAlgo o-- MinHeapDijkstra
 GraphAlgo o-- DiGraph
 MinHeapDijkstra o-- minHeap
-TestDiGraph o-- DiGraph
 
 
 
-Abstract class  client{
-
+class  client{
+start_connection(self, ip, port)
+__send_message(self, msg)
+get_agents(self)
+add_agent(self, json_of_node)
+get_graph(self)
+get_info(self)
+get_pokemons(self)
+is_running(self)
+time_to_end(self)
+start(self)
+stop(self)
+move(self)
+choose_next_edge(self, next_agent_node_json)
 }
 class Play_game{
 calculate_time_of_path(arena: Arena, list_of_stops: list)
@@ -40,88 +52,108 @@ self.scanerio_num
 }
 
 class Arena{
+update_pokemons_lst(self, json_file, first_iter: bool)
+update_agent_lst(self, json_file, already_exists: bool)
+place_agents_at_beginning(self, first_pokemons: list)
+update_game_info(self, game_info)
+
+self.pokemons_lst
+self.agents_lst
+self.graph_algo
+self.info_dict
+self.dijkstra_list
+self.client
+}
+class Window{
+ self.graph_algo
+self.agents
+self.pokemons
+self.pygame
+self.screen
+self.clock
+self.num_of_moves
+self.num_of_grade
+self.time_to_end
+self.draw_game
+
+draw_arrow_lines(self, scr: pygame.Surface, x1, y1, x2, y2, d, h)
+draw_game(self)
+scale(data, min_screen, max_screen, min_data, max_data)
+my_scale(data, x, y)
+
+}
+class Agent{
+self.id
+self.value
+self.src
+self.dest
+self.speed
+self.pos
+self.curr_node
+self.current_time_of_path
+self.agents_path
+self.pokemons_to_eat
+self.permutaion
+
+update_from_given_values(self, pos, speed, dest, src, valu)
 
 
-self.pokemons_lst: [Pokemon] = []
-self.agents_lst: [Agent] = []
-self.graph_algo: GraphAlgo = GraphAlgo()
-self.info_dict = {}
-self.dijkstra_list = {}
-self.client = Client
+}
+class Pokemon{
+self.value
+self.type
+self.pos
+self.curr_edge
+}
+
+class Edge{
+line_equation(self)
+get_point_on_edge(self, x)
+
+self.src
+self.dst
+self.weight
+self.edge_type
+self.src_location
+self.dst_location
+self.m, self.b
+
+}
+
+class GeoLocation{
+rang_to_other(self, other_location: tuple)
+get_has_tuple(self)
+
+self.x
+self.y
+self.z
+
 }
 class GraphAlgo {
 get_graph()
 load_from_json(self, file_name: str)
 save_to_json(self, file_name: str)
 shortest_path(self, id1: int, id2: int)
-TSP(self, node_lst: List[int])
-centerPoint(self)
-plot_graph(self)
-is_connected(self)
-reverse(self, graph: DiGraph)
-bfs(self, graph: DiGraph)
-find_path(self, nodes: List[Node], graph: DiGraph)
 graph:DiGraph
 }
 
 class DiGraph {
-v_size(self)
-e_size(self)
-get_all_v(self)
-all_in_edges_of_node(self, id1: int)
-all_out_edges_of_node(self, id1: int)
-get_mc(self)
-add_edge(self, id1: int, id2: int, weight: float)
-add_node(self, node_id: int, pos: tuple)
-remove_node(self, node_id: int)
-remove_edge(self, node_id1: int, node_id2: int)
-set_location(self)
-caclulate_minmax(self)
-nodes:dict
-_numOfEdges:int
-_mc:int
+
 }
 
 class MinHeapDijkstra{
-dijkstra_Getmin_distances(self, source_vertex: int, dest: int)
-decreaseKey(self, minHeap: MinHeap, newKey, vertex: int)
-graph: DiGraph
-max:int
-parents:lst
-heap_nodes:lst
-extracted:lst
+
 }
 
 class minHeap {
-insert(self, node: Node)
-heapfyUp(self, pos: int)
-extractMin(self)
-sinkDown(self, k: int)
-swap(self, a: int, b: int)
-isEmpty(self)
-heapSize(self)
-index_of_nodes1:lst
-node_holder1:lst
-heap_size:int
+
 }
 
 
-class TestDiGraph{
-test_v_size(self)
-test_e_size(self)
-test_get_all_v(self)
-test_all_in_edges_of_node(self)
-test_all_out_edges_of_node(self)
-test_get_mc(self)
-test_add_edge(self)
-test_add_node(self)
-test_remove_node(self)
-test_remove_edge(self)
-}
 
 class Node{
-__repr__(self)
-__str__(self)
+_repr_(self)
+_str_(self)
 add_out_edge(self, weight: float, dest: int)
 add_in_edge(self, weight: float, src: int)
 key:int
