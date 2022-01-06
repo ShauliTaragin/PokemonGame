@@ -198,7 +198,7 @@ Then we again clear the pokemon list and get the updated list from the client, w
 
 These are our best Results.
 
-|Case|Grade|Moves|
+|Case|Moves|Grade|
 |---------|---------|---------|
 |0|44|125|
 |1|167|455|
