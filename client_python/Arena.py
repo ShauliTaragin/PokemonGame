@@ -12,7 +12,7 @@ from client_python.client import Client
 class Arena:
     Eps = 0.001
 
-    def __init__(self, game_info: str):
+    def __init__(self, game_info: json):
         # create the arena variables
         self.pokemons_lst: [Pokemon] = []
         self.agents_lst: [Agent] = []
@@ -22,17 +22,17 @@ class Arena:
         self.client = Client
         # reading the json of the game information from the client
         if game_info is not None:
-            namespace = json.loads(game_info,
-                                   object_hook=lambda d: SimpleNamespace(**d)).GameServer
-            self.info_dict["moves"] = namespace.moves
-            self.info_dict["pokemons"] = namespace.pokemons
-            self.info_dict["is_logged_in"] = namespace.is_logged_in
-            self.info_dict["grade"] = namespace.grade
-            self.info_dict["game_level"] = namespace.game_level
-            self.info_dict["max_user_level"] = namespace.max_user_level
-            self.info_dict["id"] = namespace.id
-            self.info_dict["graph"] = namespace.graph
-            self.info_dict["agents"] = namespace.agents
+
+            convertor = json.loads(game_info)
+            self.info_dict["moves"] = convertor["GameServer"]["moves"]
+            self.info_dict["pokemons"] = convertor["GameServer"]["pokemons"]
+            self.info_dict["is_logged_in"] = convertor["GameServer"]["is_logged_in"]
+            self.info_dict["grade"] = convertor["GameServer"]["grade"]
+            self.info_dict["game_level"] = convertor["GameServer"]["game_level"]
+            self.info_dict["max_user_level"] = convertor["GameServer"]["max_user_level"]
+            self.info_dict["id"] = convertor["GameServer"]["id"]
+            self.info_dict["graph"] = convertor["GameServer"]["graph"]
+            self.info_dict["agents"] = convertor["GameServer"]["agents"]
             self.graph_algo.load_from_json(self.info_dict["graph"])
         else:
             self.info_dict = {}
@@ -47,14 +47,13 @@ class Arena:
             # first clear the current list of available pokemons
             self.pokemons_lst.clear()
             pokemons_to_allocate: list = []
-            pokemons = json.loads(json_file,
-                                  object_hook=lambda d: SimpleNamespace(**d)).Pokemons
-            pokemons = [p.Pokemon for p in pokemons]
+            pokemons = json.loads(json_file)
+            pokemons = [p["Pokemon"] for p in pokemons["Pokemons"]]
             # iterate over every given pokemon and make it object from json of the client
             for i in pokemons:
-                d: str = i.pos
+                d: str = i['pos']
                 x, y, z = d.split(',')
-                edge = self.graph_algo.get_edge_on_point((float(x), float(y), float(z)), i.type)
+                edge = self.graph_algo.get_edge_on_point((float(x), float(y), float(z)), i['type'])
                 location = GeoLocation((float(x), float(y), float(z)))
                 found_pokemon_exists = False
                 # check if the pokemon is somehow in the list
@@ -66,7 +65,7 @@ class Arena:
                 # if the pokemon is not in the arena pokemon list then create pokemon object
                 # and add it to the arena pokemon list
                 if not found_pokemon_exists:
-                    poki = Pokemon(i.value, i.type, location, edge)
+                    poki = Pokemon(i['value'], i['type'], location, edge)
                     self.pokemons_lst.append(poki)
                     if first_iter:
                         self.pokemons_lst.clear()
@@ -82,23 +81,22 @@ class Arena:
 
     def update_agent_lst(self, json_file, already_exists: bool):
         try:
-            agents = json.loads(json_file,
-                                object_hook=lambda d: SimpleNamespace(**d)).Agents
-            agents = [agent.Agent for agent in agents]
+            agents = json.loads(json_file)
+            agents = [agent["Agent"] for agent in agents["Agents"]]
             # iterate over all of the agents data
             for i in agents:
-                d: str = i.pos
+                d: str = i['pos']
                 x, y, z = d.split(',')
                 location = GeoLocation((float(x), float(y), float(z)))
                 # if there is no agent with this id then create new agent and add him to the agents list
                 if already_exists is True:
-                    double007 = Agent(i.id, location, i.value, i.src, i.dest, i.speed)
+                    double007 = Agent(i['id'], location, i['value'], i['src'], i['dest'], i['speed'])
                     self.agents_lst.append(double007)
                 else:
                     # if there is such agent then update his values from the data
                     for existing_agent in self.agents_lst:
-                        if existing_agent.id == i.id:
-                            existing_agent.update_from_given_values(location, i.speed, i.dest, i.src, i.value)
+                        if existing_agent.id == i['id']:
+                            existing_agent.update_from_given_values(location, i['speed'], i['dest'], i['src'], i['value'])
                             break
         except Exception:
             print("problem with json load pokemon")
@@ -111,7 +109,6 @@ class Arena:
     """
     def place_agents_at_beginning(self, first_pokemons: list) -> dict:
         g_algo = GraphAlgo(self.graph_algo.graph)
-
         for node in self.graph_algo.graph.nodes.values():
             # init the dijkstra class
             dijkstra = MinHeapDijkstra.DijkstraUsingMinHeap.Graph(g_algo)
@@ -147,16 +144,16 @@ class Arena:
         self.info_dict = {}
         # parse the json info and change the values at the correct places
         if game_info is not None:
-            namespace = json.loads(game_info,
-                                   object_hook=lambda d: SimpleNamespace(**d)).GameServer
-            self.info_dict["moves"] = namespace.moves
-            self.info_dict["pokemons"] = namespace.pokemons
-            self.info_dict["is_logged_in"] = namespace.is_logged_in
-            self.info_dict["grade"] = namespace.grade
-            self.info_dict["game_level"] = namespace.game_level
-            self.info_dict["max_user_level"] = namespace.max_user_level
-            self.info_dict["id"] = namespace.id
-            self.info_dict["graph"] = namespace.graph
-            self.info_dict["agents"] = namespace.agents
+            update = json.loads(game_info)
+
+            self.info_dict["moves"] = update["GameServer"]["moves"]
+            self.info_dict["pokemons"] = update["GameServer"]["pokemons"]
+            self.info_dict["is_logged_in"] = update["GameServer"]["is_logged_in"]
+            self.info_dict["grade"] = update["GameServer"]["grade"]
+            self.info_dict["game_level"] = update["GameServer"]["game_level"]
+            self.info_dict["max_user_level"] = update["GameServer"]["max_user_level"]
+            self.info_dict["id"] = update["GameServer"]["id"]
+            self.info_dict["graph"] = update["GameServer"]["graph"]
+            self.info_dict["agents"] = update["GameServer"]["agents"]
         else:
             self.info_dict = {}
