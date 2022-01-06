@@ -22,7 +22,6 @@ class Arena:
         self.client = Client
         # reading the json of the game information from the client
         if game_info is not None:
-
             convertor = json.loads(game_info)
             self.info_dict["moves"] = convertor["GameServer"]["moves"]
             self.info_dict["pokemons"] = convertor["GameServer"]["pokemons"]
@@ -145,7 +144,6 @@ class Arena:
         # parse the json info and change the values at the correct places
         if game_info is not None:
             update = json.loads(game_info)
-
             self.info_dict["moves"] = update["GameServer"]["moves"]
             self.info_dict["pokemons"] = update["GameServer"]["pokemons"]
             self.info_dict["is_logged_in"] = update["GameServer"]["is_logged_in"]
