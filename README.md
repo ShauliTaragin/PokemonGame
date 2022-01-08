@@ -3,6 +3,7 @@
 # PokemonGame
 The Fifth Task in OOP course. Building A Pokémon game 
 
+Visit the wiki for more information [wiki](https://github.com/ShauliTaragin/PokemonGame/wiki)
 
 * **Note: inorder to run our program the user must have the pygame library.**
 
@@ -125,41 +126,43 @@ Either way the gui implementation is called from the interface function plot_gra
 ***We will lay out our Pokemon Game algorithms and explain how we implemented them:***
 
 
-###Arena class
+### Arena class
 
 **The Arena class holds:**
-* *pokemons_lst -*  The list that contains the pokemons.
-* *agents_lst -* The list that contains the agents.
-* *graph_algo -* The graph algo class.
-* *info_dict -* The dictionary that holds the information of the game.
-* *dijkstra_list -* A Dictionary that holds all the nodes in the graph as keys and the value for each node is a list with the shortest weight of the
+* **pokemons_lst -**  The list that contains the pokemons.
+* **agents_lst -** The list that contains the agents.
+* **graph_algo -** The graph algo class.
+* **info_dict -** The dictionary that holds the information of the game.
+* **dijkstra_list -** A Dictionary that holds all the nodes in the graph as keys and the value for each node is a list with the shortest weight of the
 path between this node to every other node in the graph. 
-* *client -* the client of the game.
+* **client -** the client of the game.
+
 <br>
+
 **The Arena class functions:**
-1. *init -* Initializes the arena class from the info we got from the client.
-2. *update_pokemons_lst -* Updates the arena.pokemon_lst with the given json from the client.
-3. *update_agent_lst -* Updates the agents values every iteration from the client.get_agents
-4. *place_agents_at_beginning -* Creates the agents and places them at the nodes that are closest to the pokemons.
-5. *update_game_info -* Updates the game info from the client.
+1. **init -** Initializes the arena class from the info we got from the client.
+2. **update_pokemons_lst -** Updates the arena.pokemon_lst with the given json from the client.
+3. **update_agent_lst -** Updates the agents values every iteration from the client.get_agents
+4. **place_agents_at_beginning -** Creates the agents and places them at the nodes that are closest to the pokemons.
+5. **update_game_info -** Updates the game info from the client.
 
 <br>
 
 ### Play_game class
 
 
-*The Play_game which is our main class holds as class memebers:*
-* *moves -* counts the moves made.
-* *grade -* sums the grade of the game.
+**The Play_game which is our main class holds as class memebers:**
+* **moves -** counts the moves made.
+* **grade -** sums the grade of the game.
 
-*The Play_game class functions:*
-1. *AllocateAgent -* allocates an agent to a given pokemon.
-2. *get_all_permutations -* receives a list and returns all the permutations of that list.
-3. *calculate_time_of_path -* using the dijkstra dictionary to calculate the weight of the path.
-4. *dist_between_points -* receives two points and returns the distance between two points.
-5. *thread_function -* The thread that sleeps and activates the move method from the client with a certain sleep time.
+**The Play_game class functions:**
+1. **AllocateAgent -** allocates an agent to a given pokemon.
+2. **get_all_permutations -** receives a list and returns all the permutations of that list.
+3. **calculate_time_of_path -** using the dijkstra dictionary to calculate the weight of the path.
+4. **dist_between_points -** receives two points and returns the distance between two points.
+5. **thread_function -** The thread that sleeps and activates the move method from the client with a certain sleep time.
 It is responsible for the movement of the nodes, and eating the pokemons.
-6. *run_game -* runs the game.
+6. **run_game -** runs the game.
 
 ## THE MAIN ALGORITHM
 
@@ -196,7 +199,7 @@ Then we again clear the pokemon list and get the updated list from the client, w
 
 These are our best Results.
 
-|Case|Grade|Moves|
+|Case|Moves|Grade|
 |---------|---------|---------|
 |0|44|125|
 |1|167|455|
