@@ -197,7 +197,7 @@ Then we again clear the pokemon list and get the updated list from the client, w
 
 #### For our enhanced explanation please visit our wiki page for this project.
 
-These are our best Results.
+These are our best Results. Notice the amount of moves in each case.
 
 |Case|Moves|Grade|
 |---------|---------|---------|
