@@ -3,7 +3,7 @@
 # PokemonGame
 The Fifth Task in OOP course. Building A Pokémon game 
 
-Visit the wiki for more information [Ido](https://github.com/idobar1403/)
+Visit the wiki for more information [wiki](https://github.com/ShauliTaragin/PokemonGame/wiki)
 
 * **Note: inorder to run our program the user must have the pygame library.**
 
