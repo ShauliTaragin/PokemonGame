@@ -95,7 +95,7 @@ The arena will get the information from the Play_game and it will update it.
 
 
 *About our GUI* :
-* Firstly in is imported to state that the gui runs with a certain "tick" which is not so pleasent. But the reason for this is that we are planning our moves meticulously using multi threading.
+* Firstly it is imported to state that the gui runs with a certain "tick" which is not so pleasent. But the reason for this is that we are planning our moves meticulously using multi threading.
 * In our display of the pokemon game the user must run the client from the terminal choosing which case to play. Then running the program through the play_game class
 
 The game is represented in the following manner :
